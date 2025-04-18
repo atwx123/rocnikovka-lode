@@ -25,6 +25,8 @@ import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import static one.dedic.rocnikovka.lode.Bunka.LOD;
 import static one.dedic.rocnikovka.lode.Bunka.ZABRANE;
 
@@ -41,21 +43,21 @@ public class Pomucky {
         while (true) {
          screen.setCursorPosition(new TerminalPosition(x + xr + text.length(), y + yr));
         KeyStroke klavesa = screen.readInput();
-        if (klavesa.getKeyType() == KeyType.Character) {
+        if (klavesa.getKeyType() == KeyType.CHARACTER) {
             text +=  klavesa.getCharacter().toString();
             graphics.putString(x, y, text);
             
         } else {
            switch (klavesa.getKeyType()) {
-               case Enter: {
+               case ENTER: {
                    return text;
                }
-               case Backspace: {
+               case BACKSPACE: {
                   text = text.substring(0, text.length()-1);
                   graphics.putString(x, y, text + " ");
                   break;
                }
-               case Escape : {
+               case ESCAPE : {
                    for (int a = 0; a < text.length(); a++) {
                     graphics.putString(x + a, y, " ");
                     }
@@ -119,7 +121,7 @@ public class Pomucky {
         for (int a = 0; a < puvodni.length; a++) {
             for (int b = 0; b < puvodni.length; b++) {
                 if (puvodni[a][b] == LOD) {
-                    chybejici.add(a,b);
+                    Collections.addAll(chybejici, a, b);
                 }
             }
         }

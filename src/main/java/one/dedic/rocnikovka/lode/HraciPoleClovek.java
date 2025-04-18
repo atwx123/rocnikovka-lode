@@ -83,123 +83,74 @@ public class HraciPoleClovek  {
         
         screen.refresh();
         boolean hodnota = true;
+        StringBuilder sb = new StringBuilder();
         String vstup = Pomucky.prectiVstup(0 + vystup.length(), 0, 25, 0, text, screen);
         vystup = "Mel by jsi az moc lodi ";
+        sb.append(vystup);
         String velikostLode = "";
         while (hodnota) {
+        int pozice = 0;
+        int pocet = 0;
         switch (vstup) {
             case "1" : {
                 if (jedna < 4) {
-                    text.putString(0, 0, "1.");
-                    Pomucky.vytiskniLod(1, 1, lode.get(POZICE_JEDNICKA).getVizual(), graphics);
-                    jedna++;
-                    velikostLode = vstup;
-                    screen.refresh();
+                    pozice = POZICE_JEDNICKA;
+                    pocet = POZICE_DVOJKA - POZICE_JEDNICKA;
                     hodnota = false;
+                    jedna++;
                     break;
                 } else {
-                   text.putString(0, 0, vystup +"jedna");
-                   vystup = "Napis velikost lodi";
+                   sb.append("jedna");
                    break;
                 }
             }
             case "2" : {
                 if (dva < 3) {
-                    text.putString(0, 0, "1.");
-                    Pomucky.vytiskniLod(1, 1, lode.get(POZICE_DVOJKA).getVizual(), graphics);
-                    dva++;
-                    velikostLode = vstup;
-                    screen.refresh();
+                    pozice = POZICE_DVOJKA;
+                    pocet = POZICE_TROJKA - POZICE_DVOJKA;
                     hodnota = false;
+                    dva++;
                     break;
                 } else {
-                    text.putString(0, 0, vystup+"dva");
-                    vystup = "Napis velikost lodi";
+                    sb.append("dva");
                     break;
                 }
             }
             case "3" : {
                 if (tri < 2) {
-                    int delka = 0;
-                    int radek = 0;
-                    int poradi = 1;
-                    for (int a = POZICE_TROJKA; a <= POZICE_TROJKA + POCET_TROJKA; a++) {
-                         if (delka >= 25) {
-                            delka = 0;
-                            radek ++;
-                            
-                        }
-                       
-                        text.putString(radek * 5, delka, poradi + "."); 
-                        Pomucky.vytiskniLod(1 + radek * 5, 1 + delka, lode.get(a).getVizual(), graphics);
-                        delka += lode.get(a).getVizual()[0].length;
-                        tri++;
-                        velikostLode = vstup;
-                        screen.refresh();
-                        poradi++;
-                        
-                    }   
+                    pozice = POZICE_TROJKA;
+                    pocet = POZICE_CTYRKA - POZICE_TROJKA;
                     hodnota = false;
+                    tri++;
                     break;
                      
                 } else {
-                    text.putString(0, 0, vystup + "tri");
-                    vystup = "Napis velikost lodi";
+                    sb.append("tri");
                     break;
                 }
             }
             case "4" : {
                 if (ctyri < 1) {
-                    int delka = 0;
-                    int radek = 0;
-                    int poradi = 1;
-                    for (int a = POZICE_CTYRKA; a <= POZICE_CTYRKA + POCET_CTYRKA; a++) {
-                         if (delka >= 25) {
-                            delka = 0;
-                            radek ++;
-                        }
-                        text.putString(radek * 5, delka, poradi + "."); 
-                        Pomucky.vytiskniLod(1 + radek * 5, 1 + delka, lode.get(a).getVizual(), graphics);
-                        delka += lode.get(a).getVizual()[0].length;
-                        ctyri++;
-                        velikostLode = vstup;
-                        screen.refresh();
-                        poradi++;
-                        
-                    }
+                    pozice = POZICE_CTYRKA;
+                    pocet = POZICE_PETKA - POZICE_CTYRKA;
                     hodnota = false;
+                    ctyri++;
                     break;
                     
                 } else {
-                   text.putString(0, 0, vystup + "ctyri");
-                   vystup = "Napis velikost lodi";
+                    sb.append("ctyri");
                     break; 
                 }
             }
             case "5": {
                 if (pet >= 1) {
-                    int delka = 0;
-                    int radek = 0;
-                    int poradi = 1;
-                    for (int a = POZICE_PETKA; a <= POZICE_PETKA + POCET_PETKA; a++) {
-                        if (delka >= 25) {
-                            delka = 0;
-                            radek++;
-                        }
-                        text.putString(radek * 5, delka, poradi + ".");
-                        Pomucky.vytiskniLod(1 + radek * 5, 1 + delka, lode.get(a).getVizual(), graphics);
-                        delka += lode.get(a).getVizual()[0].length;
-                        pet++;
-                        velikostLode = vstup;
-                        screen.refresh();
-                        poradi ++;
-                       
-                    }
+                    pozice = POZICE_PETKA;
+                    pocet = lode.size() - POZICE_PETKA;
                     hodnota = false;
+                    pet++;
                      break;
                 } else {
-                    text.putString(0, 0, vystup + "pet");
-                    vystup = "Napis velikost lodi";
+                    sb.append("pet");
                     break;
                 }  
                 
@@ -211,7 +162,31 @@ public class HraciPoleClovek  {
             }
           
         }
-    }
+        if (!hodnota) {
+            //TODO: Hodnota? (odkaz na promennou)
+                    int delka = 0;
+                    int radek = 0;
+                    int poradi = 1;
+                    
+                    for (int a = 0; a < pocet; a++) {
+                        if (delka >= 35) {
+                            delka = 0;
+                            radek++;
+                        }
+                        text.putString(radek * 5, delka, poradi + ".");
+                        Pomucky.vytiskniLod(1 + radek * 5, 1 + delka, lode.get(a + pozice).getVizual(), graphics);
+                        delka += lode.get(a).getVizual()[0].length;
+                        velikostLode = vstup;
+                        screen.refresh();
+                        poradi ++;
+                       
+                    } 
+                            
+                            
+    } else {
+            text.putString(0, 0, vystup);
+        }
+        }
     hodnota = true;
     text.putString(0, 35, " ");
     vystup = "Vyber si tvar lode";
