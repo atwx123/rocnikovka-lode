@@ -27,88 +27,106 @@ import static one.dedic.rocnikovka.lode.Bunka.VODA;
  * @author aja
  */
 public class SeznamLodi {
-    static Bunka[][] a1b = new Bunka [][] {
+
+    static Bunka[][] a1b = new Bunka[][]{
         {LOD}
     };
-    static Bunka [][] a2b = new Bunka [][] {
+    static Bunka[][] a2b = new Bunka[][]{
         {LOD, LOD}
     };
-    static Bunka [][] a3b = new Bunka [][] {
+    static Bunka[][] a3b = new Bunka[][]{
         {LOD, LOD, LOD}
     };
-    static Bunka [][] b3b = new Bunka [][] {
+    static Bunka[][] b3b = new Bunka[][]{
         {LOD, LOD},
         {LOD, VODA}
     };
-    static Bunka [][] a4b = new Bunka [][] {
+    static Bunka[][] a4b = new Bunka[][]{
         {LOD, LOD, LOD, LOD}
     };
-    static Bunka [][] b4b = new Bunka [][] {
+    static Bunka[][] b4b = new Bunka[][]{
         {LOD, VODA, VODA},
-        {LOD, LOD , LOD }
+        {LOD, LOD, LOD}
     };
-    static Bunka [][] c4b = new Bunka [][] {
+    static Bunka[][] c4b = new Bunka[][]{
         {VODA, LOD, VODA},
-        {LOD,  LOD,  LOD }
+        {LOD, LOD, LOD}
     };
-    static Bunka [][] d4b = new Bunka [][] {
+    static Bunka[][] d4b = new Bunka[][]{
         {LOD, LOD},
         {LOD, LOD}
     };
-    static Bunka [][] a5b = new Bunka [][] {
+    static Bunka[][] a5b = new Bunka[][]{
         {LOD, LOD, LOD, LOD, LOD}
     };
-    static Bunka [][] b5b = new Bunka [][] {
+    static Bunka[][] b5b = new Bunka[][]{
         {LOD, VODA, VODA, VODA},
-        {LOD, LOD , LOD , LOD }
+        {LOD, LOD, LOD, LOD}
     };
-    static Bunka [][] c5b = new Bunka [][] {
+    static Bunka[][] c5b = new Bunka[][]{
         {LOD, VODA, LOD},
-        {LOD, LOD , LOD}
+        {LOD, LOD, LOD}
     };
-    static Bunka [][] d5b = new Bunka [][] {
+    static Bunka[][] d5b = new Bunka[][]{
         {LOD, LOD, VODA},
-        {LOD, LOD, LOD }
+        {LOD, LOD, LOD}
     };
-    static Bunka [][] e5b = new Bunka [][] {
+    static Bunka[][] e5b = new Bunka[][]{
         {VODA, LOD, VODA, VODA},
-        {LOD , LOD, LOD , LOD }
+        {LOD, LOD, LOD, LOD}
     };
-    static Bunka [][] f5b = new Bunka [][] {
+    static Bunka[][] f5b = new Bunka[][]{
         {VODA, LOD, VODA},
-        {LOD , LOD, LOD },
+        {LOD, LOD, LOD},
         {VODA, LOD, VODA}
     };
-    
-    public static final Lod a1 = new Lod (1, a1b, 1, null);
-    public static final Lod a2 = new Lod (2, a2b, 2, null);
-    public static final Lod a3 = new Lod (3, a3b, 3, null);
-    public static final Lod b3 = new Lod (3, b3b, 4, null);
-    public static final Lod a4 = new Lod (4, a4b, 5, null);
-    public static final Lod b4 = new Lod (4, b4b, 6, null);
-    public static final Lod c4 = new Lod (4, c4b, 7, null);
-    public static final Lod d4 = new Lod (4, d4b, 7, null);
-    public static final Lod a5 = new Lod (4, a5b, 7, null);
-    public static final Lod b5 = new Lod (4, b5b, 7, null);
-    public static final Lod c5 = new Lod (4, c5b, 7, null);
-    public static final Lod d5 = new Lod (4, d5b, 7, null);
-    public static final Lod e5 = new Lod (4, e5b, 7, null);
-    public static final Lod f5 = new Lod (4, f5b, 7, null);
 
-    static List <Lod> lode = new ArrayList <> ();
+    public static final Lod a1 = new Lod(1, a1b, 1, null);
+    public static final Lod a2 = new Lod(2, a2b, 2, null);
+    public static final Lod a3 = new Lod(3, a3b, 3, null);
+    public static final Lod b3 = new Lod(3, b3b, 4, null);
+    public static final Lod a4 = new Lod(4, a4b, 5, null);
+    public static final Lod b4 = new Lod(4, b4b, 6, null);
+    public static final Lod c4 = new Lod(4, c4b, 7, null);
+    public static final Lod d4 = new Lod(4, d4b, 8, null);
+    public static final Lod a5 = new Lod(5, a5b, 9, null);
+    public static final Lod b5 = new Lod(5, b5b, 10, null);
+    public static final Lod c5 = new Lod(5, c5b, 11, null);
+    public static final Lod d5 = new Lod(5, d5b, 12, null);
+    public static final Lod e5 = new Lod(5, e5b, 13, null);
+    public static final Lod f5 = new Lod(5, f5b, 14, null);
 
-    public SeznamLodi() {
-//        lode.add(a1);
-//        List<Lod> ll = null;
-          Collections.addAll(lode, a1, a2, a3, b3, a4, b4, c4, d4, a5, b5, c5, d5, e5, f5);
-//        Arrays.asList(a1b);
-        
-//        for (Lod l : ll) {
-//            
-//        }
+    static List<Lod> lode = new ArrayList<>();
+
+    static {
+        Collections.addAll(lode, a1, a2, a3, b3, a4, b4, c4, d4, a5, b5, c5, d5, e5, f5);
     }
-    
-    
 
+    public static final int POZICE_DVOJKA = 1;
+
+    public static final int POZICE_JEDNICKA = 0;
+    //TODO : premistit konstanty + pozice
+    public static final int POZICE_CTYRKA = 4;
+
+    public static final int POZICE_PETKA = 8;
+    public static final int POZICE_TROJKA = 2;
+    public static final int[] POCTYTYPU = {
+        POZICE_DVOJKA - POZICE_JEDNICKA,
+        POZICE_TROJKA - POZICE_DVOJKA,
+        POZICE_CTYRKA - POZICE_TROJKA,
+        POZICE_PETKA - POZICE_CTYRKA,
+        SeznamLodi.lode.size() - POZICE_PETKA
+    };
+    public static final int[] ZACATKY = {
+        POZICE_JEDNICKA,
+        POZICE_DVOJKA,
+        POZICE_TROJKA,
+        POZICE_CTYRKA,
+        POZICE_PETKA
+    };
     
+    public static final int[] POCTYLODI = {
+        4, 3, 2, 1, 1
+    };
+
 }

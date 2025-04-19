@@ -79,6 +79,7 @@ public class HraciPoleClovek  {
         text.fillRectangle(new TerminalPosition(25, 0), text.getSize(), ' ');
              // TODO: vycistit celou plochu, pouzit text.getSize() pro hranice 
         vystup = "Napis velikost lodi";
+        //TODO : reset
         text.putString(0, 0, vystup);
         
         screen.refresh();
@@ -94,8 +95,8 @@ public class HraciPoleClovek  {
         switch (vstup) {
             case "1" : {
                 if (jedna < 4) {
-                    pozice = POZICE_JEDNICKA;
-                    pocet = POZICE_DVOJKA - POZICE_JEDNICKA;
+                    pozice = SeznamLodi.POZICE_JEDNICKA;
+                    pocet = SeznamLodi.POZICE_DVOJKA - SeznamLodi.POZICE_JEDNICKA;
                     hodnota = false;
                     jedna++;
                     break;
@@ -106,8 +107,8 @@ public class HraciPoleClovek  {
             }
             case "2" : {
                 if (dva < 3) {
-                    pozice = POZICE_DVOJKA;
-                    pocet = POZICE_TROJKA - POZICE_DVOJKA;
+                    pozice = SeznamLodi.POZICE_DVOJKA;
+                    pocet = SeznamLodi.POZICE_TROJKA - SeznamLodi.POZICE_DVOJKA;
                     hodnota = false;
                     dva++;
                     break;
@@ -118,8 +119,8 @@ public class HraciPoleClovek  {
             }
             case "3" : {
                 if (tri < 2) {
-                    pozice = POZICE_TROJKA;
-                    pocet = POZICE_CTYRKA - POZICE_TROJKA;
+                    pozice = SeznamLodi.POZICE_TROJKA;
+                    pocet = SeznamLodi.POZICE_CTYRKA - SeznamLodi.POZICE_TROJKA;
                     hodnota = false;
                     tri++;
                     break;
@@ -131,8 +132,8 @@ public class HraciPoleClovek  {
             }
             case "4" : {
                 if (ctyri < 1) {
-                    pozice = POZICE_CTYRKA;
-                    pocet = POZICE_PETKA - POZICE_CTYRKA;
+                    pozice = SeznamLodi.POZICE_CTYRKA;
+                    pocet = SeznamLodi.POZICE_PETKA - SeznamLodi.POZICE_CTYRKA;
                     hodnota = false;
                     ctyri++;
                     break;
@@ -144,10 +145,11 @@ public class HraciPoleClovek  {
             }
             case "5": {
                 if (pet >= 1) {
-                    pozice = POZICE_PETKA;
-                    pocet = lode.size() - POZICE_PETKA;
+                    pozice = SeznamLodi.POZICE_PETKA;
+                    pocet = lode.size() - SeznamLodi.POZICE_PETKA;
                     hodnota = false;
                     pet++;
+                    
                      break;
                 } else {
                     sb.append("pet");
@@ -163,7 +165,6 @@ public class HraciPoleClovek  {
           
         }
         if (!hodnota) {
-            //TODO: Hodnota? (odkaz na promennou)
                     int delka = 0;
                     int radek = 0;
                     int poradi = 1;
@@ -191,39 +192,71 @@ public class HraciPoleClovek  {
     text.putString(0, 35, " ");
     vystup = "Vyber si tvar lode";
     text.putString(0, 0, vystup);
-    while (true) {
-    screen.refresh();
-    vstup = Pomucky.prectiVstup(0 + vystup.length(), 0, 0, 25, graphics, screen);
+    hodnota = true;
     Lod vybranaLod;
     int cislo = 0;
-
+    while (hodnota) {
+    screen.refresh();
+    vstup = Pomucky.prectiVstup(0 + vystup.length(), 0, 0, 25, graphics, screen);
+    int tvarLode = Integer.parseInt(vstup);
+// TODO : nahradit switxh + dodelat pole 
     switch (velikostLode) {
         case "1" : {
-            cislo = POZICE_JEDNICKA;
+            if (tvarLode > SeznamLodi.POZICE_DVOJKA - SeznamLodi.POZICE_JEDNICKA) {
+                vystup = "Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)";
+                break;
+            }
+            hodnota = false;
+            cislo = SeznamLodi.POZICE_JEDNICKA;
+            break;
         }
         case "2": {
-           cislo = POZICE_DVOJKA;
+           if (tvarLode > SeznamLodi.POZICE_TROJKA - SeznamLodi.POZICE_DVOJKA) {
+               vystup = "Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)";
+                break;
+            }
+           hodnota = false;
+           cislo =  SeznamLodi.POZICE_DVOJKA;
+           break;
         }
         case "3": {
-            cislo = POZICE_TROJKA;
+             if (tvarLode > SeznamLodi.POZICE_CTYRKA - SeznamLodi.POZICE_TROJKA) {
+                vystup = "Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)";
+                break;
+            }
+             hodnota = false;
+            cislo = SeznamLodi.POZICE_TROJKA;
+            break;
         }
         case "4" : {
-            cislo = POZICE_CTYRKA;
+             if (tvarLode > SeznamLodi.POZICE_PETKA - SeznamLodi.POZICE_CTYRKA) {
+                vystup = "Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)";
+                break;
+            }
+             hodnota = false;
+            cislo = SeznamLodi.POZICE_CTYRKA;
+            break;
         }
         case "5" : {
-            cislo = POZICE_PETKA;
+             if (tvarLode >= lode.size() - SeznamLodi.POZICE_PETKA) {
+                vystup = "Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)";
+                break;
+            }
+            hodnota = false;
+            cislo = SeznamLodi.POZICE_PETKA;
+            break;
         }
     }
-        for (int a = 0; a < 13; a++) {
-            text.putString(a, 35, " ");
-        }
-        text.putString(0, 0, "Vybral jsi si lod" + vstup + ".");
-        Pomucky.vytiskniLod(0, 1, SeznamLodi.lode.get(cislo + Integer.parseInt(vstup) - 1).getVizual(), graphics);
-        screen.refresh();
-        vybranaLod = SeznamLodi.lode.get(2 + Integer.parseInt(vstup));
-        return vybranaLod;
+       
+        text.putString(0, 0, vystup);
     }
-
+    //TODO : vycistit na zacatku kazde fce terminal
+            Pomucky.vycistiTerminal(text);
+            text.putString(0, 0, "Vybral jsi si lod" + vstup + ".");
+            Pomucky.vytiskniLod(0, 1, SeznamLodi.lode.get(cislo + Integer.parseInt(vstup) - 1).getVizual(), graphics);
+            screen.refresh();
+            vybranaLod = SeznamLodi.lode.get(Integer.parseInt(vstup));
+            return vybranaLod;
     }
     public void umisteniLodi (Lod pLod) throws IOException {
 
@@ -266,28 +299,25 @@ public class HraciPoleClovek  {
             if (!Pomucky.prekryvani(pLod, hracPole, sloupec, radek)) {
                 text.putString(0, 0, "prekyvaji se ti lode/lod s okolim jine lode");
             } else {
-                Pomucky.kopiePoleDoPole(sloupec, radek, maska, hracPole);
+                //TODO : zkontrolovat zaporne indexy
+                //TODO : zkontrolovat, jestli lod "nevyleza" z pole
+                Pomucky.kopiePoleDoPole(sloupec -1 , radek - 1, maska, hracPole);
                 
                 //TODO : pridat moznost rotace
-                SeznamUmistenychLodi.setSeznamULodi(new UmistenaLod(pLod, sloupec, radek, 0));
+                SeznamUmistenychLodi.pridaniDoSeznamu(new UmistenaLod(pLod, sloupec, radek, 0));
                 hodnota = false;
             }
             
         }
     }
+    
+    public void umisteniLodi () throws IOException {
+        //TODO : podminka na umisteni VSECH lodi
+        umisteniLodi(vybraniLodi());
+    }
     //TODO : ukazani, kde by byla lod
     private static final int ZACATEK_HRACPOLE_X = 3;
     private static final int ZACATEK_HRACPOLE_Y = 4;
-    private static final int POCET_PETKA = 5;
-    private static final int POCET_CTYRKA = 3;
-    private static final int POCET_TROJKA = 2;
-    private static final int POCET_DVOJKA = 1;
-    private static final int POCET_JEDNICKA = 1;
-    private static final int POZICE_PETKA = 8;
-    private static final int POZICE_CTYRKA = 4;
-    private static final int POZICE_TROJKA = 2;
-    private static final int POZICE_DVOJKA = 1;
-    private static final int POZICE_JEDNICKA = 0; 
 }
 
 

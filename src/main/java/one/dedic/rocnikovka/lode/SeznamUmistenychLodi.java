@@ -22,13 +22,13 @@ import java.util.ArrayList;
  * @author aja
  */
 public class SeznamUmistenychLodi {
-    private static  ArrayList <UmistenaLod> seznamULodi = new ArrayList<>();
-
+    private static ArrayList <UmistenaLod> seznamULodi = new ArrayList<>();
+//TODO : predelat na non-static
     public static  ArrayList<UmistenaLod> getSeznamULodi() {
         return seznamULodi;
     }
 
-    public static void setSeznamULodi(UmistenaLod Lod) {
+    public static void pridaniDoSeznamu(UmistenaLod Lod) {
         seznamULodi.add(Lod);
     }
     

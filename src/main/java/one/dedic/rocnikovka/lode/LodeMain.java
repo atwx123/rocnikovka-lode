@@ -24,6 +24,7 @@ import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import java.io.IOException;
+import java.util.Random;
 import static one.dedic.rocnikovka.lode.Bunka.LOD;
 import static one.dedic.rocnikovka.lode.Bunka.POTOPENA;
 import static one.dedic.rocnikovka.lode.Bunka.STRELENA;
@@ -47,9 +48,13 @@ public class LodeMain {
         
         TextGraphics graphics = scn.newTextGraphics();
         Pomucky pom = new Pomucky();
-        HraciPoleClovek hraciPole = new HraciPoleClovek(graphics, scn);
+        //HraciPoleClovek hraciPole = new HraciPoleClovek(graphics, scn);
         
-        hraciPole.umisteniLodi(hraciPole.vybraniLodi());
+
+        
+        HraciPolePocitac pocitac = new HraciPolePocitac(scn, graphics);
+       pocitac.opakUmisteniLodi();
+       
         
         
         

@@ -32,7 +32,6 @@ public enum Bunka {
          * nesestrelene policko s lodi
          */
         ZABRANE, 
-        //TODO: rozdelana
         LOD,
         /**
          * trefene policko s lodi

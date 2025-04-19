@@ -119,7 +119,7 @@ public class Pomucky {
         Bunka[][] maska = new Bunka[puvodni.length+2][puvodni[0].length+2];
         ArrayList <Integer> chybejici = new ArrayList<Integer>();
         for (int a = 0; a < puvodni.length; a++) {
-            for (int b = 0; b < puvodni.length; b++) {
+            for (int b = 0; b < puvodni[a].length; b++) {
                 if (puvodni[a][b] == LOD) {
                     Collections.addAll(chybejici, a, b);
                 }
@@ -169,7 +169,7 @@ public class Pomucky {
         for (int a = 0; a <vLod.length; a++) {
             for (int b = 0; b <vLod.length; b++) {
                 if (vLod[a][b] == LOD) {
-                    kde.add(a,b);
+                    Collections.addAll(kde, a, b);
                 }
             }
         }
@@ -201,10 +201,54 @@ public class Pomucky {
             } 
         }
     }
+    public static void vycistiTerminal (TextGraphics text) {
+        vycistiTerminal(0, 0, text.getSize().getColumns(), text.getSize().getRows(), text);
+    }
     public static void kopiePoleDoPole (int x, int y, Bunka[][] maska, Bunka[][] hracPole) {
         for (int a = 0; a < maska.length; a++) {
             for (int b = 0; b < maska[a].length; b++) {
-                hracPole[a + y][b + x] = maska [a][b];
+                if (a + y < 10 && b + x < 10) {
+                    hracPole[a + y][b + x] = maska [a][b];
+                }
+            }
+        }
+    }
+    public static void vytisknuti2DPole (Bunka[][] pole, TextGraphics graphics, boolean hra, int x, int y) {
+        TextGraphics plocha = graphics.newTextGraphics(new TerminalPosition(x, y), 
+                new TerminalSize(graphics.getSize().getColumns() - x, graphics.getSize().getRows() - y));
+        TextGraphics dvojita = new DoublePrintingTextGraphics(plocha);
+        for (int a = 0; a < pole.length; a++) {
+            for (int b = 0; b < pole[a].length; b++) {
+                Bunka obsah = pole[a][b]; 
+                if (obsah == null) {
+                    obsah = Bunka.VODA;
+                }
+                switch (obsah) {
+                    case VODA : {
+                        dvojita.putString(a + y, b + x, " ");
+                        break;
+                    } 
+                    case VEDLE : {
+                        dvojita.putString(a + y, b + x, Character.toString(Symbols.BULLET));
+                        break;
+                    }
+                    case LOD : {
+                        dvojita.putString(a + y, b + x, Character.toString(Symbols.BLOCK_SOLID));
+                        break;
+                    }
+                    case STRELENA : {
+                        dvojita.putString(a + y, b + x, Character.toString(Symbols.BLOCK_MIDDLE));
+                        break;
+                    }
+                    case POTOPENA : {
+                        dvojita.putString(a + y, b + x, Character.toString(Symbols.BLOCK_SPARSE));
+                    }
+                    case ZABRANE : {
+                        dvojita.putString(a + y, b + x, Character.toString(Symbols.BLOCK_DENSE));
+                    }
+                    
+                    
+                }
             }
         }
     }
