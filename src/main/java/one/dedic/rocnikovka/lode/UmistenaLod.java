@@ -26,6 +26,39 @@ public class UmistenaLod {
     private int rotace;
     private int x;
     private int y;
+
+    public Lod getPuvodni() {
+        return puvodni;
+    }
+
+    public int getRotace() {
+        return rotace;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public Bunka[][] getVizual() {
+        return vizual;
+    }
+
+    public int getVelikost() {
+        return velikost;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getJmeno() {
+        return jmeno;
+    }
+    
     private Bunka[][] vizual;
     private final int velikost;
     private final int id;

@@ -22,15 +22,16 @@ import java.util.ArrayList;
  * @author aja
  */
 public class SeznamUmistenychLodi {
-    private static ArrayList <UmistenaLod> seznamULodi = new ArrayList<>();
-//TODO : predelat na non-static
-    public static  ArrayList<UmistenaLod> getSeznamULodi() {
+
+    private ArrayList<UmistenaLod> seznamULodi = new ArrayList<>();
+    public Bunka[][] hraciPole = new Bunka[10][10];
+
+    public ArrayList<UmistenaLod> getSeznamULodi() {
         return seznamULodi;
     }
 
-    public static void pridaniDoSeznamu(UmistenaLod Lod) {
+    public void pridaniDoSeznamu(UmistenaLod Lod) {
         seznamULodi.add(Lod);
     }
-    
-    
+
 }

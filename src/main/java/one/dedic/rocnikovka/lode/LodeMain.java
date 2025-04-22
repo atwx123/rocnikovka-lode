@@ -48,14 +48,15 @@ public class LodeMain {
         
         TextGraphics graphics = scn.newTextGraphics();
         Pomucky pom = new Pomucky();
-        //HraciPoleClovek hraciPole = new HraciPoleClovek(graphics, scn);
+        HraciPoleClovek clovek = new HraciPoleClovek(graphics, scn);
+        SeznamLodi sLodi = new SeznamLodi();
         
+        //Pomucky.prectiVstup(0, 0, graphics, scn);
+//        
+//        HraciPolePocitac pocitac = new HraciPolePocitac(scn, graphics);
+//       pocitac.opakUmisteniLodi();
 
-        
-        HraciPolePocitac pocitac = new HraciPolePocitac(scn, graphics);
-       pocitac.opakUmisteniLodi();
-       
-        
+        clovek.umisteniLodi();
         
         
     }

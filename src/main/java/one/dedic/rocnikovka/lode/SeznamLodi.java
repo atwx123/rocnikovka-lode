@@ -105,7 +105,6 @@ public class SeznamLodi {
     public static final int POZICE_DVOJKA = 1;
 
     public static final int POZICE_JEDNICKA = 0;
-    //TODO : premistit konstanty + pozice
     public static final int POZICE_CTYRKA = 4;
 
     public static final int POZICE_PETKA = 8;
@@ -128,5 +127,13 @@ public class SeznamLodi {
     public static final int[] POCTYLODI = {
         4, 3, 2, 1, 1
     };
-
+    //TODO: udelat fci na vyhledavani pomoci id
+    public static Lod najdiId (int id) {
+        for (Lod lod : lode) {
+            if (lod.getId() == id) {
+                return lod;
+            }
+        }
+        return null;
+    }
 }
