@@ -20,6 +20,7 @@ import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.graphics.DoublePrintingTextGraphics;
 import com.googlecode.lanterna.graphics.TextGraphics;
+import com.googlecode.lanterna.graphics.TextGraphicsWriter;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
@@ -32,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 import static one.dedic.rocnikovka.lode.Bunka.LOD;
+import static one.dedic.rocnikovka.lode.Bunka.STRELENA;
 import static one.dedic.rocnikovka.lode.Bunka.ZABRANE;
 
 /**
@@ -336,6 +338,60 @@ public class Pomucky {
             }
         }
         return sULodi;
+    }
+    public static String vyzvaAVstup(int x, int y, String vyzva, TextGraphics graphics, Screen screen) throws IOException {
+        TextGraphicsWriter writer = new TextGraphicsWriter(graphics);
+        writer.setCursorPosition(new TerminalPosition(0, 0));
+        writer.putString(vyzva);
+        return Pomucky.prectiVstup(writer.getCursorPosition(), graphics, screen);
+    }
+    
+    public static boolean potopena (int sloupec, int radek, Bunka[][] hraciPole) {
+        ArrayList<Integer> seznam = new ArrayList<>();
+        Collections.addAll(seznam, radek, sloupec);
+        while (true) {
+            int y = seznam.remove(0);
+            int x = seznam.remove(0);
+            if (seznam.isEmpty()) {
+                return true;
+            }
+            if (hraciPole[y-1][x] == LOD) {
+                return false;
+            }
+            if (hraciPole[y+1][x] == LOD) {
+                return false;
+            }
+            if (hraciPole[y][x+1] == LOD) {
+                return false;
+            }
+            if (hraciPole[y][x-1] == LOD) {
+                return false;
+            }
+            
+            if (hraciPole[y][x+1] == STRELENA) {
+                Collections.addAll(seznam, y, x+1);
+            }
+            if (hraciPole[y][x-1] == STRELENA) {
+                Collections.addAll(seznam, y, x-1);
+            }
+            if (hraciPole[y + 1][x] == STRELENA) {
+                Collections.addAll(seznam, y + 1, x);
+            }
+            if (hraciPole[y - 1][x] == STRELENA) {
+                Collections.addAll(seznam, y - 1, x);
+            }
+        }
+    }
+    
+    public static boolean konecHry (Bunka[][] hraciPole) {
+        for (int a = 0; a < hraciPole.length; a++) {
+            for (int b = 0; b < hraciPole[a].length; b++) {
+                if (hraciPole[a][b] == LOD) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }

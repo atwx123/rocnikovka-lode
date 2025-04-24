@@ -33,15 +33,25 @@ import static one.dedic.rocnikovka.lode.SeznamLodi.POCTYTYPU;
  * @author aja
  */
 public class HraciPolePocitac  {
-
+    SeznamUmistenychLodi sULodi;
     private Bunka[][] hraciPole;
     Random random = new Random();
     private Screen screen;
     private TextGraphics graphics;
+    
 
     public HraciPolePocitac(Screen screen, TextGraphics graphics) {
         this.screen = screen;
         this.graphics = graphics;
+        this.hraciPole = sULodi.hraciPole;
+    }
+
+    public SeznamUmistenychLodi getsULodi() {
+        return sULodi;
+    }
+
+    public Bunka[][] getHraciPole() {
+        return hraciPole;
     }
     
     
@@ -72,7 +82,6 @@ public class HraciPolePocitac  {
                             Pomucky.kopiePoleDoPole(x, y, Pomucky.maskaLodi(lod), hraciPole);
                             hodnota = false;
                             poctyULodi[velikost]++;
-                            Pomucky.vytisknuti2DPole(hraciPole, graphics, hodnota, x, y);
                             try {
                             screen.refresh();
                             } catch (IOException vyjimka) {

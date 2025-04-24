@@ -74,12 +74,7 @@ public class HraciPoleClovek {
         hraciPole.putString(23, 12, Character.toString(Symbols.SINGLE_LINE_BOTTOM_RIGHT_CORNER));
     }
 
-    private String vyzvaAVstup(int x, int y, String vyzva) throws IOException {
-        TextGraphicsWriter writer = new TextGraphicsWriter(text);
-        writer.setCursorPosition(new TerminalPosition(0, 0));
-        writer.putString(vyzva);
-        return Pomucky.prectiVstup(writer.getCursorPosition(), text, screen);
-    }
+    
 
     public Lod vybraniLodi() throws IOException {
         boolean hodnota = true;
@@ -99,7 +94,7 @@ public class HraciPoleClovek {
 //            vstup = Pomucky.prectiVstup(0 + vystup.length(), 0, text, screen);
             vstup = Pomucky.prectiVstup(writer.getCursorPosition(), text, screen);
              */
-            vstup = vyzvaAVstup(0, 0, vystup);
+            vstup = Pomucky.vyzvaAVstup(0, 0, vystup, text, screen);
             if (vstup == "u") {
                 Pomucky.ukladani(uLode, false);
             }
@@ -217,7 +212,7 @@ public class HraciPoleClovek {
 
                 text.setForegroundColor(TextColor.ANSI.RED);
                 sb.append("pro pokracovani zmackni enter");
-                vyzvaAVstup(0, 0, vystup);
+                Pomucky.vyzvaAVstup(0, 0, vystup, text, screen);
                 prectiVstup(vystup.length(), 0, graphics, screen);
                 text.setForegroundColor(TextColor.ANSI.DEFAULT);
             }
@@ -286,7 +281,7 @@ public class HraciPoleClovek {
                 vycistiTerminal(text);
                 text.setForegroundColor(TextColor.ANSI.RED);
                 sb.append(" pro pokracovani zmackni enter");
-                vyzvaAVstup(0, 0, sb.toString());
+                Pomucky.vyzvaAVstup(0, 0, sb.toString(), text, screen);
                 prectiVstup(sb.length(), 0, graphics, screen);
 
                 text.setForegroundColor(TextColor.ANSI.DEFAULT);
@@ -347,7 +342,7 @@ public class HraciPoleClovek {
                 sb.append("prekyvaji se ti lode/lod s okolim jine lode");
                 text.setForegroundColor(TextColor.ANSI.RED);
                 sb.append(" pro pokracovani zmackni enter");
-                vyzvaAVstup(0, 0, sb.toString());
+                Pomucky.vyzvaAVstup(0, 0, sb.toString(), text, screen);
                 prectiVstup(sb.length(), 0, graphics, screen);
                 text.setForegroundColor(TextColor.ANSI.DEFAULT);
             } else {
