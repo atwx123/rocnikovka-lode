@@ -40,25 +40,23 @@ public class LodeMain {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException {
-        Terminal t = new DefaultTerminalFactory().setInitialTerminalSize(new TerminalSize(120,50)).createTerminal();
-        
+        Terminal t = new DefaultTerminalFactory().setInitialTerminalSize(new TerminalSize(120, 50)).createTerminal();
+
         Screen scn = new TerminalScreen(t);
-        
+
         scn.startScreen();
-        
+
         TextGraphics graphics = scn.newTextGraphics();
         Pomucky pom = new Pomucky();
         HraciPoleClovek clovek = new HraciPoleClovek(graphics, scn);
         SeznamLodi sLodi = new SeznamLodi();
-        
+
         //Pomucky.prectiVstup(0, 0, graphics, scn);
 //        
 //        HraciPolePocitac pocitac = new HraciPolePocitac(scn, graphics);
 //       pocitac.opakUmisteniLodi();
+        clovek.umisteniLodi(SeznamLodi.lode.get(11));
 
-        clovek.umisteniLodi();
-        
-        
     }
-    
+
 }

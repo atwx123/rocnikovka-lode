@@ -184,6 +184,7 @@ public class HraciPoleClovek {
 
                 }
                 default: {
+                    vycistiTerminal(text);
                     text.setForegroundColor(TextColor.ANSI.RED);
                     sb.append(" pro pokracovani zmackni enter");
                     text.putString(0, 0, sb.toString());
@@ -282,6 +283,7 @@ public class HraciPoleClovek {
                 }
             }
             if (hodnota) {
+                vycistiTerminal(text);
                 text.setForegroundColor(TextColor.ANSI.RED);
                 sb.append(" pro pokracovani zmackni enter");
                 vyzvaAVstup(0, 0, sb.toString());
@@ -300,16 +302,18 @@ public class HraciPoleClovek {
 
     public void umisteniLodi(Lod pLod) throws IOException {
         text.setForegroundColor(TextColor.ANSI.DEFAULT);
-        boolean hodnota = true;
+    boolean hodnota = true;
         int sloupec, radek = -1;
         vycistiTerminal(text);
         StringBuilder sb = new StringBuilder();
         while (hodnota) {
             while (true) {
                 String vystup = "Napis pozici lodi (a1; A1)";
-                String vstup = prectiVstup(vystup.length(), 0, graphics, screen);
+                text.putString(0, 0, vystup);
+                String vstup = prectiVstup(new TerminalPosition(vystup.length(), 0), text, screen);
                 vycistiTerminal(0, 0, 12, 35, text);
                 char vstup1 = vstup.toLowerCase().charAt(0);
+                vstup1 -= 'a';
                 int vstup2 = Integer.parseInt(vstup.substring(1));
                 text.setForegroundColor(TextColor.ANSI.RED);
                 vystup = "";
@@ -323,6 +327,7 @@ public class HraciPoleClovek {
                 }
 
                 if (!vystup.isEmpty()) {
+                    vycistiTerminal(text);
                     text.setForegroundColor(TextColor.ANSI.RED);
                     sb.append(" pro pokracovani zmackni enter");
                     text.putString(0, 0, sb.toString());
@@ -338,10 +343,11 @@ public class HraciPoleClovek {
             vycistiTerminal(text);
             Bunka[][] maska = maskaLodi(pLod);
             if (!Pomucky.prekryvani(pLod, uLode.hraciPole, sloupec, radek)) {
+                vycistiTerminal(text);
                 sb.append("prekyvaji se ti lode/lod s okolim jine lode");
                 text.setForegroundColor(TextColor.ANSI.RED);
                 sb.append(" pro pokracovani zmackni enter");
-                text.putString(0, 0, sb.toString());
+                vyzvaAVstup(0, 0, sb.toString());
                 prectiVstup(sb.length(), 0, graphics, screen);
                 text.setForegroundColor(TextColor.ANSI.DEFAULT);
             } else {

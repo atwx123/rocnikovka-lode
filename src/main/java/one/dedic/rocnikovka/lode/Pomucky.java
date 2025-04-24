@@ -39,7 +39,7 @@ import static one.dedic.rocnikovka.lode.Bunka.ZABRANE;
  * @author aja
  */
 public class Pomucky {
-    
+
     public static String prectiVstup(TerminalPosition pos, TextGraphics graphics, Screen screen) throws IOException {
         return prectiVstup(pos.getColumn(), pos.getRow(), graphics, screen);
     }
@@ -119,7 +119,7 @@ public class Pomucky {
     public static Bunka[][] kopiePole(Bunka[][] pole) {
         Bunka[][] novePole = new Bunka[pole.length][pole[0].length];
         for (int a = 0; a < pole.length; a++) {
-            for (int b = 0; b < pole[a].length; a++) {
+            for (int b = 0; b < pole[a].length; b++) {
                 novePole[a][b] = pole[a][b];
             }
         }
