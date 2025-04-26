@@ -131,7 +131,7 @@ public class Pomucky {
     public static Bunka[][] maskaLodi(Lod lod) {
         Bunka[][] puvodni = lod.getVizual();
         Bunka[][] maska = new Bunka[puvodni.length + 2][puvodni[0].length + 2];
-        ArrayList<Integer> chybejici = new ArrayList<Integer>();
+        ArrayList<Integer> chybejici = new ArrayList<>();
         for (int a = 0; a < puvodni.length; a++) {
             for (int b = 0; b < puvodni[a].length; b++) {
                 if (puvodni[a][b] == LOD) {
@@ -246,26 +246,26 @@ public class Pomucky {
                 }
                 switch (obsah) {
                     case VODA: {
-                        dvojita.putString(a + y, b + x, " ");
+                        dvojita.putString(a, b, " ");
                         break;
                     }
                     case VEDLE: {
-                        dvojita.putString(a + y, b + x, Character.toString(Symbols.BULLET));
+                        dvojita.putString(a, b, Character.toString(Symbols.BULLET));
                         break;
                     }
                     case LOD: {
-                        dvojita.putString(a + y, b + x, Character.toString(Symbols.BLOCK_SOLID));
+                        dvojita.putString(a, b, Character.toString(Symbols.BLOCK_SOLID));
                         break;
                     }
                     case STRELENA: {
-                        dvojita.putString(a + y, b + x, Character.toString(Symbols.BLOCK_MIDDLE));
+                        dvojita.putString(a, b, Character.toString(Symbols.BLOCK_MIDDLE));
                         break;
                     }
                     case POTOPENA: {
-                        dvojita.putString(a + y, b + x, Character.toString(Symbols.BLOCK_SPARSE));
+                        dvojita.putString(a, b, Character.toString(Symbols.BLOCK_SPARSE));
                     }
                     case ZABRANE: {
-                        dvojita.putString(a + y, b + x, Character.toString(Symbols.BLOCK_DENSE));
+                        dvojita.putString(a, b, Character.toString(Symbols.BLOCK_DENSE));
                     }
 
                 }

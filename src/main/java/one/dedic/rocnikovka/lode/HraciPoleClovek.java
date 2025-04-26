@@ -95,10 +95,12 @@ public class HraciPoleClovek {
             vstup = Pomucky.prectiVstup(writer.getCursorPosition(), text, screen);
              */
             vstup = Pomucky.vyzvaAVstup(0, 0, vystup, text, screen);
-            if (vstup == "u") {
+            int pozice = 0;
+            int pocet = 0;
+            if (vstup.equals("u")) {
                 Pomucky.ukladani(uLode, false);
-            }
-            if (vstup == "n") {
+            } else {
+            if (vstup.equals("n")) {
                 try {
                     uLode = Pomucky.nahravani(false);
                 } catch (IOException vyjimka) {
@@ -108,11 +110,10 @@ public class HraciPoleClovek {
 
                 }
                 dopocitaniLodi();
-            }
+            } else {
             vystup = "Mel by jsi az moc lodi ";
             sb.append(vystup);
-            int pozice = 0;
-            int pocet = 0;
+            
             switch (vstup) {
                 case "1": {
                     if (poctyULodi[0] < POCTYLODI[0]) {
@@ -187,15 +188,20 @@ public class HraciPoleClovek {
                     text.setForegroundColor(TextColor.ANSI.DEFAULT);
                     break;
                 }
+                
+            
 
+                    }   
+                }
             }
+        
             if (!hodnota) {
                 int delka = 0;
                 int radek = 0;
                 int poradi = 1;
 
                 for (int a = 0; a < pocet; a++) {
-                    if (delka * 2 + a * 2 + lode.get(a + pozice).getVizual()[0].length >= 35) {
+                    if (delka * 2 + a * 2 + lode.get(a + pozice).getVizual()[0].length*2 >= 35) {
                         delka = 0;
                         radek++;
                     }
@@ -213,6 +219,7 @@ public class HraciPoleClovek {
                 text.setForegroundColor(TextColor.ANSI.RED);
                 sb.append("pro pokracovani zmackni enter");
                 Pomucky.vyzvaAVstup(0, 0, vystup, text, screen);
+                screen.refresh();
                 prectiVstup(vystup.length(), 0, graphics, screen);
                 text.setForegroundColor(TextColor.ANSI.DEFAULT);
             }
@@ -229,7 +236,7 @@ public class HraciPoleClovek {
             text.putString(0, 0, vystup);
             screen.refresh();
             vstup = Pomucky.prectiVstup(new TerminalPosition(vystup.length(), 0), text, screen);
-            int tvarLode = Integer.parseInt(vstup);
+            int tvarLode = Integer.parseInt(vstup) - 1;
             switch (velikostLode) {
                 case 1: {
                     if (tvarLode > SeznamLodi.POZICE_DVOJKA - SeznamLodi.POZICE_JEDNICKA) {
@@ -291,7 +298,7 @@ public class HraciPoleClovek {
         text.putString(0, 0, "Vybral jsi si lod" + vstup + ".");
         Pomucky.vytiskniLod(0, 1, SeznamLodi.lode.get(cislo + Integer.parseInt(vstup) - 1).getVizual(), text, false);
         screen.refresh();
-        vybranaLod = SeznamLodi.lode.get(Integer.parseInt(vstup));
+        vybranaLod = SeznamLodi.lode.get(Integer.parseInt(vstup) - 1 + cislo);
         return vybranaLod;
     }
 
@@ -317,7 +324,7 @@ public class HraciPoleClovek {
                     sb.append("Mas moc velke/male cislo sloupce");
                 }
 
-                if (vstup2 > 10 || vstup2 < 0) {
+                if (vstup2 - 1 > 10 || vstup2 - 1 < 0) {
                     sb.append("Mas moc velke/male cislo radku");
                 }
 
@@ -329,7 +336,7 @@ public class HraciPoleClovek {
                     prectiVstup(sb.length(), 0, graphics, screen);
                     text.setForegroundColor(TextColor.ANSI.DEFAULT);
                 } else {
-                    radek = vstup2;
+                    radek = vstup2 - 1;
                     sloupec = vstup1;
                     break;
                 }
@@ -347,7 +354,7 @@ public class HraciPoleClovek {
                 text.setForegroundColor(TextColor.ANSI.DEFAULT);
             } else {
                 Pomucky.kopiePoleDoPole(sloupec - 1, radek - 1, maska, uLode.hraciPole);
-
+                Pomucky.vytisknuti2DPole(uLode.hraciPole, hrac, false, sloupec + ZACATEK_HRACPOLE_X, radek + ZACATEK_HRACPOLE_Y);
                 //TODO : pridat moznost rotace
                 uLode.pridaniDoSeznamu(new UmistenaLod(pLod, sloupec, radek, 0));
                 hodnota = false;
@@ -372,5 +379,5 @@ public class HraciPoleClovek {
     }
     //TODO : ukazani, kde by byla lod
     private static final int ZACATEK_HRACPOLE_X = 3;
-    private static final int ZACATEK_HRACPOLE_Y = 4;
+    private static final int ZACATEK_HRACPOLE_Y = 2;
 }

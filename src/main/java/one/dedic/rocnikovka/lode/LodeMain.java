@@ -54,9 +54,9 @@ public class LodeMain {
         //Pomucky.prectiVstup(0, 0, graphics, scn);
 //        
 //        HraciPolePocitac pocitac = new HraciPolePocitac(scn, graphics);
-//       pocitac.opakUmisteniLodi();
-        clovek.umisteniLodi(SeznamLodi.lode.get(11));
-
+//       pocitac.opakUmisteniclovek.umisteniLodi(SeznamLodi.lode.get(11));Lodi();
+        
+        clovek.umisteniLodi();
     }
 
 }
