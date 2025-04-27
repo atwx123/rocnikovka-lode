@@ -85,6 +85,9 @@ public class HraciPoleClovek {
         vycistiTerminal(text);
         text.setForegroundColor(TextColor.ANSI.DEFAULT);
         int velikostLode = 0;
+        // TODO REVIEW: hodnota zde neslouzi jako velicina, vstup ale jako overeni, zda
+        // je zadany vstup platny; nazev 'hodnota' je matouci - tradicne se pouzivaji
+        // nazvy jako 'ok', 'platnyVstup', 'kontrola', 'kontrolaOK' apod.
         while (hodnota) {
             vystup = "Napis velikost lodi (u - ulozeni, n - nahrani)";
             //TODO : reset
@@ -94,11 +97,13 @@ public class HraciPoleClovek {
 //            vstup = Pomucky.prectiVstup(0 + vystup.length(), 0, text, screen);
             vstup = Pomucky.prectiVstup(writer.getCursorPosition(), text, screen);
              */
+            // TODO REVIEW: prirazeni do pomocne promnne 'vystup' je zbytecne ?
             vstup = Pomucky.vyzvaAVstup(0, 0, vystup, text, screen);
             int pozice = 0;
             int pocet = 0;
             if (vstup.equals("u")) {
                 Pomucky.ukladani(uLode, false);
+                // TODO REVIEW: Vypise se potvrzeni po ulozeni hry ?
             } else {
             if (vstup.equals("n")) {
                 try {
@@ -106,10 +111,12 @@ public class HraciPoleClovek {
                 } catch (IOException vyjimka) {
                     vycistiTerminal(text);
                     text.setForegroundColor(TextColor.ANSI.RED);
+                    // TODO REVIEW: vyzvaAVstup. A pokracuje se dal dopocitanimLodi ?? 
                     text.putString(0, 0, vyjimka.getMessage());
 
                 }
                 dopocitaniLodi();
+                // TODO REVIEW: Vypada to, ze bude nasledovat hlaska " pro pokracovani zmackni enter". Je to v poradku ?
             } else {
             vystup = "Mel by jsi az moc lodi ";
             sb.append(vystup);
@@ -123,6 +130,10 @@ public class HraciPoleClovek {
                         poctyULodi[0]++;
                         break;
                     } else {
+                        // TODO REVIEW: Vysledny MOZNA bude: "Mel by jsi az moc lodi jedna pro pokracovani zmackni enter"
+                        // a/ gramatika
+                        // b/ opravdu je treba rozdelit hlasku chyby "Mel by jsi az moc lodi ... pro pokracovani zmackni enter"
+                        //    do 2 prikazu "tak daleko" od sebe ?
                         sb.append("jedna");
                         break;
                     }
@@ -180,12 +191,18 @@ public class HraciPoleClovek {
 
                 }
                 default: {
+                    // TODO REVIEW: zde se napise:
+                    // "Mel by jsi az moc lodi  pro pokracovani zmackni enter" - ale uzivatel
+                    // napsal "necislo", takze ted nevi, co vlastne udelal spatne.
                     vycistiTerminal(text);
                     text.setForegroundColor(TextColor.ANSI.RED);
                     sb.append(" pro pokracovani zmackni enter");
+                    // TODO REVIEW: pouzit vyzvaAVstup, zalamuje text.
                     text.putString(0, 0, sb.toString());
+                    // TODO: text namisto graphics
                     prectiVstup(sb.length(), 0, graphics, screen);
                     text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                    // TODO REVIEW: break zpusobi preruse `switch' ale znovu vypise chybovou hlasku.
                     break;
                 }
                 
@@ -196,6 +213,21 @@ public class HraciPoleClovek {
             }
         
             if (!hodnota) {
+                // TODO REVIEW: tento kod se pousti tehdy a jen tehdy, kdyz vzapeti skonci
+                // obklopujici cyklus `while'. Dalsi kod ve `while` jiz nenasleduje (cely zbytek je 
+                // v else vetvi). Je prehlednejsi umistit kod BEZ podminky ZA konec cyklu:
+                // while (podminka) {
+                // ...
+                //    if (!podminka) {
+                //      .// kod
+                //    }
+                // }
+                // ---->
+                // while (podminka) {
+                // ...
+                // }
+                // kod
+                
                 int delka = 0;
                 int radek = 0;
                 int poradi = 1;
@@ -217,11 +249,15 @@ public class HraciPoleClovek {
             } else {
 
                 text.setForegroundColor(TextColor.ANSI.RED);
+                // TODO REVIEW: hodnota 'sb' neni nijak pouzita pro vyzvu/vstup.
                 sb.append("pro pokracovani zmackni enter");
                 Pomucky.vyzvaAVstup(0, 0, vystup, text, screen);
+                // TODO REVIEW: vyzvaAVstup ceka na vstup. Pak se ZNOVU ceka na vstup.                
                 screen.refresh();
                 prectiVstup(vystup.length(), 0, graphics, screen);
                 text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                // TODO REVIEW: Pokud uzivatel zada "1" a ma moc lodi, a nasledne OPET "1"
+                // bude se v `sb' dale pridavat " jedna" " jedna" ... a postupne se vypisovat vice a vice
             }
         }
         sb = new StringBuilder();
@@ -232,13 +268,19 @@ public class HraciPoleClovek {
         Lod vybranaLod;
         int cislo = 0;
         while (hodnota) {
+            // TODO REVIEW: pro vyzvu a nasledny vstup mame funkci, ta zaroven resi umisteni
+            // kurzoru podle delky vyzvy v parametru. Prirazeni do pomocne promenne je pak zbytecne.
             vystup = "Vyber si tvar lode";
             text.putString(0, 0, vystup);
             screen.refresh();
             vstup = Pomucky.prectiVstup(new TerminalPosition(vystup.length(), 0), text, screen);
+            // TODO REVIEW: Nevyzkouseny kod: parseInt muze hazet NumberFormatException pro ne-cisla,
+            // neni osetreno.
             int tvarLode = Integer.parseInt(vstup) - 1;
             switch (velikostLode) {
                 case 1: {
+                    // TODO REVIEW: pocty lod konkretniho typu jsou PREDPOCITANE v Pomucky.POCTY_TYPU.
+                    // Indexy 'bloku' tvaru lodi daneho typu jsou pripravene v Pomucky.ZACATKY  
                     if (tvarLode > SeznamLodi.POZICE_DVOJKA - SeznamLodi.POZICE_JEDNICKA) {
                         sb.append("Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)");
                         break;
@@ -288,6 +330,7 @@ public class HraciPoleClovek {
                 vycistiTerminal(text);
                 text.setForegroundColor(TextColor.ANSI.RED);
                 sb.append(" pro pokracovani zmackni enter");
+                // TODO REVIEW: 2x cteni vstupu.
                 Pomucky.vyzvaAVstup(0, 0, sb.toString(), text, screen);
                 prectiVstup(sb.length(), 0, graphics, screen);
 
@@ -296,6 +339,7 @@ public class HraciPoleClovek {
         }
         Pomucky.vycistiTerminal(text);
         text.putString(0, 0, "Vybral jsi si lod" + vstup + ".");
+        // TODO REVIEW: opakovany vypocet s Integer.parseInt
         Pomucky.vytiskniLod(0, 1, SeznamLodi.lode.get(cislo + Integer.parseInt(vstup) - 1).getVizual(), text, false);
         screen.refresh();
         vybranaLod = SeznamLodi.lode.get(Integer.parseInt(vstup) - 1 + cislo);
@@ -320,14 +364,19 @@ public class HraciPoleClovek {
                 text.setForegroundColor(TextColor.ANSI.RED);
                 vystup = "";
 
+                // TODO REVIEW: hodnota vstup1 je uz PO odecteni 'a'. 
                 if ((vstup1 - 'a') > 10 || (vstup1 - 97) < 0) {
                     sb.append("Mas moc velke/male cislo sloupce");
                 }
 
                 if (vstup2 - 1 > 10 || vstup2 - 1 < 0) {
+                    // TODO REVIEW: V pripade spatneho zadani obou casti souradnic spatne
+                    // bude hlaska "Mas moc velke/male cislo sloupceMas moc velke/male cislo radku"
                     sb.append("Mas moc velke/male cislo radku");
                 }
 
+                // TODO REVIEW: ani jednou nevyzkouseny kod: vystup je vzdy "", pripadna chyba
+                // se akumuluje v "sb".
                 if (!vystup.isEmpty()) {
                     vycistiTerminal(text);
                     text.setForegroundColor(TextColor.ANSI.RED);
@@ -336,6 +385,7 @@ public class HraciPoleClovek {
                     prectiVstup(sb.length(), 0, graphics, screen);
                     text.setForegroundColor(TextColor.ANSI.DEFAULT);
                 } else {
+                    // TODO REVIEW: Opravdu se do sloupce zapise poradi sloupce 0-9 ?? 
                     radek = vstup2 - 1;
                     sloupec = vstup1;
                     break;
@@ -346,13 +396,17 @@ public class HraciPoleClovek {
             Bunka[][] maska = maskaLodi(pLod);
             if (!Pomucky.prekryvani(pLod, uLode.hraciPole, sloupec, radek)) {
                 vycistiTerminal(text);
+                // TODO REIVEW: proc se tu pouziva "sb" pro postupne vytvareni hlaseni, kdyz 
+                // tento blok osetruje zcela novou podminku ?
                 sb.append("prekyvaji se ti lode/lod s okolim jine lode");
                 text.setForegroundColor(TextColor.ANSI.RED);
                 sb.append(" pro pokracovani zmackni enter");
+                // TODO REVIEW: 2x cteni vstupu
                 Pomucky.vyzvaAVstup(0, 0, sb.toString(), text, screen);
                 prectiVstup(sb.length(), 0, graphics, screen);
                 text.setForegroundColor(TextColor.ANSI.DEFAULT);
             } else {
+                // TODO REVIEW: citelnejsi je finalni kopii a umisteni lode umistit ZA cyklus kontrolujici platnost vstupu.
                 Pomucky.kopiePoleDoPole(sloupec - 1, radek - 1, maska, uLode.hraciPole);
                 Pomucky.vytisknuti2DPole(uLode.hraciPole, hrac, false, sloupec + ZACATEK_HRACPOLE_X, radek + ZACATEK_HRACPOLE_Y);
                 //TODO : pridat moznost rotace
@@ -364,6 +418,8 @@ public class HraciPoleClovek {
     }
 
     public void umisteniLodi() throws IOException {
+        // TODO REVIEW: Obsahy poli NEJDE porovnavat pomoci ==, rovnitko porovna
+        // zda jsou pole 'stejny objekt' (stejna reference) ! 
         while (!(poctyULodi == POCTYLODI)) {
             umisteniLodi(vybraniLodi());
         }

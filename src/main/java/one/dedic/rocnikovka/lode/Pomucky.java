@@ -223,6 +223,7 @@ public class Pomucky {
     public static void kopiePoleDoPole(int x, int y, Bunka[][] maska, Bunka[][] hracPole) {
         for (int a = 0; a < maska.length; a++) {
             for (int b = 0; b < maska[a].length; b++) {
+                // PENDING REVIEW: horni hranice by se mela testovat pomoci pole.length, spise nez konstanty
                 if ((a + y) < 0 || (a + y) > 9) {
                     continue;
                 }
@@ -355,6 +356,7 @@ public class Pomucky {
             if (seznam.isEmpty()) {
                 return true;
             }
+            // TODO REVIEW: neosetrene pripady, kdy x/y +- 1 padne mimo rozsah pole.
             if (hraciPole[y-1][x] == LOD) {
                 return false;
             }

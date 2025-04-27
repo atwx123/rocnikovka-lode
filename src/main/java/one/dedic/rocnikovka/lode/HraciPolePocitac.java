@@ -80,6 +80,7 @@ public class HraciPolePocitac  {
                         int y = random.nextInt(10 - lod.getVizual().length);
                         if (Pomucky.prekryvani(lod, hraciPole, x, y)) {
                             Pomucky.kopiePoleDoPole(x, y, Pomucky.maskaLodi(lod), hraciPole);
+                            // TODO REVIEW: nema se vybrana lod take zaradit do SeznamUmistenychLodi ?
                             hodnota = false;
                             poctyULodi[velikost]++;
                             try {
