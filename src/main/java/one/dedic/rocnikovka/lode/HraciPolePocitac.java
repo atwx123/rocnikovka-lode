@@ -33,7 +33,7 @@ import static one.dedic.rocnikovka.lode.SeznamLodi.POCTYTYPU;
  * @author aja
  */
 public class HraciPolePocitac  {
-    SeznamUmistenychLodi sULodi;
+    SeznamUmistenychLodi sULodi = new SeznamUmistenychLodi();
     private Bunka[][] hraciPole;
     Random random = new Random();
     private Screen screen;
@@ -48,6 +48,11 @@ public class HraciPolePocitac  {
 
     public SeznamUmistenychLodi getsULodi() {
         return sULodi;
+    }
+
+    public void setsULodi(SeznamUmistenychLodi sULodi) {
+        this.sULodi = sULodi;
+        this.hraciPole = sULodi.hraciPole;
     }
 
     public Bunka[][] getHraciPole() {
@@ -101,12 +106,13 @@ public class HraciPolePocitac  {
 
     }
     
-    public void opakUmisteniLodi () {
+    public boolean opakUmisteniLodi () throws IOException {
         for (int a = 0; a < 6; a++) {
             if (umisteniLodi()) {
-                return;
+                return true;
             }
         }
-        graphics.putString(0, 0, "Pocitac se az mockrat pokusil o umisteni lodi, restartuj program");
+        Pomucky.vyzvaAVstup(0, 0, "Pocitac se az mockrat pokusil o umisteni lodi, restartuj program", graphics, screen);
+        return false;
     }
 }

@@ -31,8 +31,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 import static one.dedic.rocnikovka.lode.Bunka.LOD;
+import static one.dedic.rocnikovka.lode.Bunka.POTOPENA;
 import static one.dedic.rocnikovka.lode.Bunka.STRELENA;
 import static one.dedic.rocnikovka.lode.Bunka.ZABRANE;
 
@@ -276,9 +278,35 @@ public class Pomucky {
 
     public static void ukladani(SeznamUmistenychLodi sULodi, boolean hra) throws IOException {
         Properties prop = new Properties();
+        ukladani2("clovek", prop, sULodi, hra);
+        try (FileWriter writer = new FileWriter(new File("ulozenahra.properties"))) {
+            prop.store(writer, "");
+        }
+    }
+    
+    public static void ukladani(UlozenaHra hra) throws IOException {
+        Properties prop = new Properties();
+        ukladani2("clovek", prop, hra.getClovek(), true);
+        ukladani2("pocitac", prop, hra.getPocitac(), true);
+        String prefix = "pocitac.dalsiStrely";
+        StringBuilder sb = new StringBuilder();
+        for (int a = 0; a < hra.stavPocitace.getPotopeni().size(); a++) {
+            if (a > 0) {
+                sb.append(";");
+            }
+            sb.append(hra.stavPocitace.getPotopeni().get(a));
+            
+        }
+        prop.setProperty(prefix, sb.toString());
+        try (FileWriter writer = new FileWriter(new File("ulozenahra.properties"))) {
+            prop.store(writer, "");
+        }
+    }
+    
+    private static void ukladani2(String prefixSeznamu, Properties prop, SeznamUmistenychLodi sULodi, boolean hra) throws IOException {
         for (int poradiL = 0; poradiL < sULodi.getSeznamULodi().size(); poradiL++) {
             UmistenaLod lod = sULodi.getSeznamULodi().get(poradiL);
-            String prefix = "lod" + Integer.toString(poradiL + 1) + ".";
+            String prefix = prefixSeznamu + ".lod" + Integer.toString(poradiL + 1) + ".";
             prop.setProperty(prefix + "id", Integer.toString(lod.getId()));
             prop.setProperty(prefix + "x", Integer.toString(lod.getX()));
             prop.setProperty(prefix + "y", Integer.toString(lod.getY()));
@@ -286,7 +314,7 @@ public class Pomucky {
         }
         if (hra) {
             for (int poradiP = 0; poradiP < 10; poradiP++) {
-                String prefix = "radek" + Integer.toString(poradiP + 1);
+                String prefix = prefixSeznamu + ".radek" + Integer.toString(poradiP + 1);
                 StringBuilder sb = new StringBuilder();
                 for (int b = 0; b < 10; b++) {
                     if (b > 0) {
@@ -297,20 +325,47 @@ public class Pomucky {
                 prop.setProperty(prefix, sb.toString());
             }
         }
-        try (FileWriter writer = new FileWriter(new File("ulozenahra.properties"))) {
-            prop.store(writer, "");
+    }
+    
+    public static UlozenaHra nahravani2() throws IOException {
+        Properties prop = new Properties();
+        SeznamUmistenychLodi clovekLode;
+        SeznamUmistenychLodi pocitacLode;
+        UlozenaHra hra = new UlozenaHra();
+        try (FileReader reader = new FileReader(new File("ulozenahra.properties"))) {
+            prop.load(reader);
+            clovekLode = nahravaniSeznamu("clovek", prop);
+            hra.setClovek(clovekLode);
+            pocitacLode = nahravaniSeznamu("pocitac", prop);
+            if (pocitacLode.getSeznamULodi().isEmpty()) {
+                return hra;
+            }
+            hra.setPocitac(pocitacLode);
+            String obsah = prop.getProperty("pocitac.dalsiStrely");
+            StavPocitace stavP = new StavPocitace(clovekLode.hraciPole);
+            if (obsah != null) {
+                ArrayList<Integer> strely = new ArrayList();
+                for (String souradnice : obsah.split(";")) {
+                    strely.add(Integer.parseInt(souradnice));
+                }
+                stavP.setPotopeni(strely);
+            }
         }
+        return hra;
     }
 
     public static SeznamUmistenychLodi nahravani(boolean hra) throws IOException {
         Properties prop = new Properties();
-        SeznamUmistenychLodi sULodi = new SeznamUmistenychLodi();
         try (FileReader reader = new FileReader(new File("ulozenahra.properties"))) {
             prop.load(reader);
-
+            return nahravaniSeznamu("clovek", prop);
         }
+    }
+
+    private static SeznamUmistenychLodi nahravaniSeznamu(String prefixSeznamu, Properties prop) throws IOException {
+        SeznamUmistenychLodi sULodi = new SeznamUmistenychLodi();
         for (int poradi = 0;; poradi++) {
-            String prefix = "lod" + Integer.toString(poradi + 1) + ".";
+            String prefix = prefixSeznamu + ".lod" + Integer.toString(poradi + 1) + ".";
             if (prop.getProperty(prefix + "id") == null) {
                 break;
             }
@@ -323,58 +378,71 @@ public class Pomucky {
                 throw new IOException("Spatna data");
             }
             sULodi.pridaniDoSeznamu(new UmistenaLod(lod, x, y, rotace));
-            if (!hra) {
                 kopiePoleDoPole(x, y, maskaLodi(lod), sULodi.hraciPole);
-            }
 
         }
-        if (hra) {
             for (int a = 0; a < 10; a++) {
-                String klic = "radek" + Integer.toString(a + 1);
+                String klic = prefixSeznamu + ".radek" + Integer.toString(a + 1);
                 Bunka[][] pole = sULodi.hraciPole;
-                String[] hodnoty = prop.getProperty(klic).split(",");
+                String obsah = prop.getProperty(klic);
+                if (obsah == null) {
+                    return sULodi;
+                }
+                String[] hodnoty = obsah.split(",");
                 for (int b = 0; b < 10; b++) {
                     pole[a][b] = Bunka.valueOf(hodnoty[b]);
                 }
             }
-        }
         return sULodi;
     }
+
     public static String vyzvaAVstup(int x, int y, String vyzva, TextGraphics graphics, Screen screen) throws IOException {
         TextGraphicsWriter writer = new TextGraphicsWriter(graphics);
         writer.setCursorPosition(new TerminalPosition(0, 0));
         writer.putString(vyzva);
         return Pomucky.prectiVstup(writer.getCursorPosition(), graphics, screen);
     }
-    
-    public static boolean potopena (int sloupec, int radek, Bunka[][] hraciPole) {
+
+    public static boolean potopena(int sloupec, int radek, Bunka[][] hraciPole) {
         ArrayList<Integer> seznam = new ArrayList<>();
         Collections.addAll(seznam, radek, sloupec);
-        while (true) {
-            int y = seznam.remove(0);
-            int x = seznam.remove(0);
+        for (int a = 0; a < seznam.size(); a+=2) {
+            int y = seznam.get(a);
+            int x = seznam.get(a+1);
             if (seznam.isEmpty()) {
                 return true;
             }
-            // TODO REVIEW: neosetrene pripady, kdy x/y +- 1 padne mimo rozsah pole.
-            if (hraciPole[y-1][x] == LOD) {
+            // TODO REVIEW: neosetrene pripady, kdy x/y +- 1 padne mimo rozsah pole
+            if (y - 1 < 0) {
+                continue;
+            }
+            if (y + 1 >= 10) {
+                continue;
+            }
+            if (x - 1 < 0) {
+                continue;
+            }
+            if (x + 1 >= 10) {
+                continue;
+            }
+            if (hraciPole[y - 1][x] == LOD) {
                 return false;
             }
-            if (hraciPole[y+1][x] == LOD) {
+            if (hraciPole[y + 1][x] == LOD) {
                 return false;
             }
-            if (hraciPole[y][x+1] == LOD) {
+            if (hraciPole[y][x + 1] == LOD) {
                 return false;
             }
-            if (hraciPole[y][x-1] == LOD) {
+            if (hraciPole[y][x - 1] == LOD) {
                 return false;
             }
-            
-            if (hraciPole[y][x+1] == STRELENA) {
-                Collections.addAll(seznam, y, x+1);
+
+            if (hraciPole[y][x + 1] == STRELENA) {
+                Collections.addAll(seznam, y, x + 1);
             }
-            if (hraciPole[y][x-1] == STRELENA) {
-                Collections.addAll(seznam, y, x-1);
+            if (hraciPole[y][x - 1] == STRELENA) {
+                Collections.addAll(seznam, y, x - 1);
             }
             if (hraciPole[y + 1][x] == STRELENA) {
                 Collections.addAll(seznam, y + 1, x);
@@ -383,9 +451,15 @@ public class Pomucky {
                 Collections.addAll(seznam, y - 1, x);
             }
         }
+        while (!seznam.isEmpty()) {
+            int y = seznam.remove(0);
+            int x = seznam.remove(0);
+            hraciPole[y][x] = POTOPENA;
+        }
+        return true;
     }
-    
-    public static boolean konecHry (Bunka[][] hraciPole) {
+
+    public static boolean konecHry(Bunka[][] hraciPole) {
         for (int a = 0; a < hraciPole.length; a++) {
             for (int b = 0; b < hraciPole[a].length; b++) {
                 if (hraciPole[a][b] == LOD) {
@@ -394,6 +468,90 @@ public class Pomucky {
             }
         }
         return true;
+    }
+
+    public static int najdiDvojici(int prvni, int druhe, ArrayList<Integer> list) {
+        for (int a = 0; a < list.size(); a += 2) {
+            if (list.get(a).equals(prvni) && list.get(a + 1).equals(druhe)) {
+                return a;
+            }
+        }
+        return -1;
+    }
+
+    public static ArrayList<Integer> obteckujLod(int radek, int sloupec, Bunka[][] hraciPole) {
+        ArrayList<Integer> seznam = new ArrayList<>();
+        ArrayList<Integer> obteckovani = new ArrayList<>();
+        Collections.addAll(seznam, radek, sloupec);
+        while (!seznam.isEmpty()) {
+            int x = seznam.remove(0);
+            int y = seznam.remove(0);
+            if (y - 1 >= 0) {
+                if (hraciPole[y - 1][x].jeLod()) {
+                    Collections.addAll(seznam, x, y - 1);
+                } else {
+                    Collections.addAll(obteckovani, x, y - 1);
+                    hraciPole[y - 1][x] = ZABRANE;
+                }
+                if (x - 1 >= 0) {
+                    if (hraciPole[y - 1][x - 1].jeLod()) {
+                        Collections.addAll(seznam, x - 1, y - 1);
+                    } else {
+                        Collections.addAll(obteckovani, x - 1, y - 1);
+                        hraciPole[y - 1][x - 1] = ZABRANE;
+                    }
+                }
+                if (x + 1 < 10) {
+                    if (hraciPole[y - 1][x + 1].jeLod()) {
+                        Collections.addAll(seznam, x + 1, y - 1);
+                    } else {
+                        Collections.addAll(obteckovani, x + 1, y - 1);
+                        hraciPole[y - 1][x + 1] = ZABRANE;
+                    }
+                }
+            }
+            if (x - 1 >= 0) {
+                if (hraciPole[y][x - 1].jeLod()) {
+                    Collections.addAll(seznam, x - 1, y);
+                } else {
+                    Collections.addAll(obteckovani, x - 1, y);
+                    hraciPole[y][x - 1] = ZABRANE;
+                }
+                if (y + 1 > 10) {
+                    if (hraciPole[y + 1][x - 1].jeLod()) {
+                        Collections.addAll(seznam, x - 1, y + 1);
+                    } else {
+                        Collections.addAll(obteckovani, x - 1, y + 1);
+                        hraciPole[y + 1][x - 1] = ZABRANE;
+                    }
+                }
+            }
+            if (x + 1 < 10) {
+                if (hraciPole[y][x + 1].jeLod()) {
+                    Collections.addAll(seznam, x + 1, y);
+                } else {
+                    Collections.addAll(obteckovani, x + 1, y);
+                    hraciPole[y][x + 1] = ZABRANE;
+                }
+                if (y + 1 < 10) {
+                    if (hraciPole[y + 1][x + 1].jeLod()) {
+                        Collections.addAll(seznam, x + 1, y + 1);
+                    } else {
+                        Collections.addAll(obteckovani, x + 1, y + 1);
+                        hraciPole[y + 1][x + 1] = ZABRANE;
+                    }
+                }
+            }
+            if (y + 1 < 10) {
+                if (hraciPole[y + 1][x].jeLod()) {
+                    Collections.addAll(seznam, x, y + 1);
+                } else {
+                    Collections.addAll(obteckovani, x, y + 1);
+                    hraciPole[y + 1][x] = ZABRANE;
+                }
+            }
+        }
+        return obteckovani;
     }
 
 }

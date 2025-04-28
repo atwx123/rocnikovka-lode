@@ -50,13 +50,30 @@ public class LodeMain {
         Pomucky pom = new Pomucky();
         HraciPoleClovek clovek = new HraciPoleClovek(graphics, scn);
         SeznamLodi sLodi = new SeznamLodi();
-
+    
         //Pomucky.prectiVstup(0, 0, graphics, scn);
 //        
 //        HraciPolePocitac pocitac = new HraciPolePocitac(scn, graphics);
 //       pocitac.opakUmisteniclovek.umisteniLodi(SeznamLodi.lode.get(11));Lodi();
-        
+        StavPocitace stavPocitace = null;
         clovek.umisteniLodi();
+        HraciPolePocitac polePocitace = new HraciPolePocitac(scn, graphics);
+        if (clovek.getUlozenaHra() != null && clovek.getUlozenaHra().getStavPocitace() != null) {
+            stavPocitace = clovek.getUlozenaHra().getStavPocitace();
+            polePocitace.setsULodi(clovek.getUlozenaHra().getPocitac());
+        } else {
+            if (polePocitace.opakUmisteniLodi()) {
+                scn.stopScreen();
+                return;
+            }
+            stavPocitace = new StavPocitace(clovek.getHracPole());
+            UlozenaHra hra = new UlozenaHra();
+            hra.setClovek(clovek.getuLode());
+            hra.setPocitac(polePocitace.getsULodi());
+            hra.setStavPocitace(stavPocitace);
+            Pomucky.ukladani(hra);
+        }
+        StavHrace stavHrace = new StavHrace(polePocitace.getHraciPole());
     }
 
 }

@@ -21,12 +21,22 @@ import static one.dedic.rocnikovka.lode.Pomucky.prectiVstup;
 public class StavHrace {
 
     Bunka[][] pocitac;
+    TextGraphics graphics;
+    Screen screen;
 
     public StavHrace(Bunka[][] pocitac) {
         this.pocitac = pocitac;
     }
 
-    public void strileni(Screen screen, TextGraphics graphics) throws IOException {
+    public void setGraphics(TextGraphics graphics) {
+        this.graphics = graphics;
+    }
+
+    public void setScreen(Screen screen) {
+        this.screen = screen;
+    }
+    
+    public void strileni() throws IOException {
         int radek = -1;
         int sloupec = -1;
         StringBuilder sb = new StringBuilder();

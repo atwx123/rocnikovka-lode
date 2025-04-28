@@ -23,6 +23,7 @@ import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.graphics.TextGraphicsWriter;
 import com.googlecode.lanterna.screen.Screen;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static one.dedic.rocnikovka.lode.Pomucky.maskaLodi;
@@ -45,6 +46,13 @@ public class HraciPoleClovek {
     private SeznamUmistenychLodi uLode = new SeznamUmistenychLodi();
     private int[] poctyULodi = {0, 0, 0, 0, 0};
     TextGraphics text;
+    UlozenaHra ulozenaHra;
+    private static final int ZACATEK_HRACPOLE_X = 3;
+    private static final int ZACATEK_HRACPOLE_Y = 2;
+
+    public UlozenaHra getUlozenaHra() {
+        return ulozenaHra;
+    }
 
     public HraciPoleClovek(TextGraphics graphics, Screen screen) {
         this.graphics = graphics;
@@ -77,7 +85,7 @@ public class HraciPoleClovek {
     
 
     public Lod vybraniLodi() throws IOException {
-        boolean hodnota = true;
+        boolean ok = true;
         StringBuilder sb = new StringBuilder();
         String vstup = "";
 
@@ -85,11 +93,7 @@ public class HraciPoleClovek {
         vycistiTerminal(text);
         text.setForegroundColor(TextColor.ANSI.DEFAULT);
         int velikostLode = 0;
-        // TODO REVIEW: hodnota zde neslouzi jako velicina, vstup ale jako overeni, zda
-        // je zadany vstup platny; nazev 'hodnota' je matouci - tradicne se pouzivaji
-        // nazvy jako 'ok', 'platnyVstup', 'kontrola', 'kontrolaOK' apod.
-        while (hodnota) {
-            vystup = "Napis velikost lodi (u - ulozeni, n - nahrani)";
+        while (ok) {
             //TODO : reset
             /*
 //            text.putString(0, 0, vystup);
@@ -97,25 +101,32 @@ public class HraciPoleClovek {
 //            vstup = Pomucky.prectiVstup(0 + vystup.length(), 0, text, screen);
             vstup = Pomucky.prectiVstup(writer.getCursorPosition(), text, screen);
              */
-            // TODO REVIEW: prirazeni do pomocne promnne 'vystup' je zbytecne ?
-            vstup = Pomucky.vyzvaAVstup(0, 0, vystup, text, screen);
+            vstup = Pomucky.vyzvaAVstup(0, 0, "Napis velikost lodi (u - ulozeni, n - nahrani)", text, screen);
             int pozice = 0;
             int pocet = 0;
             if (vstup.equals("u")) {
                 Pomucky.ukladani(uLode, false);
-                // TODO REVIEW: Vypise se potvrzeni po ulozeni hry ?
+                Pomucky.vycistiTerminal(text);
+                Pomucky.vyzvaAVstup(0, 0, "Hra byla ulozena", text, screen);
+                continue;
             } else {
             if (vstup.equals("n")) {
                 try {
-                    uLode = Pomucky.nahravani(false);
+                    UlozenaHra hra = Pomucky.nahravani2();
+                    uLode = hra.getClovek();
+                    dopocitaniLodi();
+                    if (hra.getStavPocitace() != null) {
+                        this.ulozenaHra = hra;
+                        return null;
+                    }
+                    // uLode = Pomucky.nahravani(false);
                 } catch (IOException vyjimka) {
                     vycistiTerminal(text);
                     text.setForegroundColor(TextColor.ANSI.RED);
-                    // TODO REVIEW: vyzvaAVstup. A pokracuje se dal dopocitanimLodi ?? 
                     text.putString(0, 0, vyjimka.getMessage());
-
+                    
+                    continue;
                 }
-                dopocitaniLodi();
                 // TODO REVIEW: Vypada to, ze bude nasledovat hlaska " pro pokracovani zmackni enter". Je to v poradku ?
             } else {
             vystup = "Mel by jsi az moc lodi ";
@@ -126,7 +137,7 @@ public class HraciPoleClovek {
                     if (poctyULodi[0] < POCTYLODI[0]) {
                         pozice = SeznamLodi.POZICE_JEDNICKA;
                         pocet = SeznamLodi.POZICE_DVOJKA - SeznamLodi.POZICE_JEDNICKA;
-                        hodnota = false;
+                        ok = false;
                         poctyULodi[0]++;
                         break;
                     } else {
@@ -142,7 +153,7 @@ public class HraciPoleClovek {
                     if (poctyULodi[1] < POCTYLODI[1]) {
                         pozice = SeznamLodi.POZICE_DVOJKA;
                         pocet = SeznamLodi.POZICE_TROJKA - SeznamLodi.POZICE_DVOJKA;
-                        hodnota = false;
+                        ok = false;
                         poctyULodi[1]++;
                         break;
                     } else {
@@ -154,7 +165,7 @@ public class HraciPoleClovek {
                     if (poctyULodi[2] < POCTYLODI[2]) {
                         pozice = SeznamLodi.POZICE_TROJKA;
                         pocet = SeznamLodi.POZICE_CTYRKA - SeznamLodi.POZICE_TROJKA;
-                        hodnota = false;
+                        ok = false;
                         poctyULodi[2]++;
                         break;
 
@@ -167,7 +178,7 @@ public class HraciPoleClovek {
                     if (poctyULodi[3] < POCTYLODI[3]) {
                         pozice = SeznamLodi.POZICE_CTYRKA;
                         pocet = SeznamLodi.POZICE_PETKA - SeznamLodi.POZICE_CTYRKA;
-                        hodnota = false;
+                        ok = false;
                         poctyULodi[3]++;
                         break;
 
@@ -180,7 +191,7 @@ public class HraciPoleClovek {
                     if (poctyULodi[4] < POCTYLODI[4]) {
                         pozice = SeznamLodi.POZICE_PETKA;
                         pocet = lode.size() - SeznamLodi.POZICE_PETKA;
-                        hodnota = false;
+                        ok = false;
                         poctyULodi[4]++;
 
                         break;
@@ -212,7 +223,7 @@ public class HraciPoleClovek {
                 }
             }
         
-            if (!hodnota) {
+            if (!ok) {
                 // TODO REVIEW: tento kod se pousti tehdy a jen tehdy, kdyz vzapeti skonci
                 // obklopujici cyklus `while'. Dalsi kod ve `while` jiz nenasleduje (cely zbytek je 
                 // v else vetvi). Je prehlednejsi umistit kod BEZ podminky ZA konec cyklu:
@@ -261,13 +272,13 @@ public class HraciPoleClovek {
             }
         }
         sb = new StringBuilder();
-        hodnota = true;
+        ok = true;
         Pomucky.vycistiTerminal(0, 0, 2, 35, text);
 
-        hodnota = true;
+        ok = true;
         Lod vybranaLod;
         int cislo = 0;
-        while (hodnota) {
+        while (ok) {
             // TODO REVIEW: pro vyzvu a nasledny vstup mame funkci, ta zaroven resi umisteni
             // kurzoru podle delky vyzvy v parametru. Prirazeni do pomocne promenne je pak zbytecne.
             vystup = "Vyber si tvar lode";
@@ -285,7 +296,7 @@ public class HraciPoleClovek {
                         sb.append("Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)");
                         break;
                     }
-                    hodnota = false;
+                    ok = false;
                     cislo = SeznamLodi.POZICE_JEDNICKA;
                     break;
                 }
@@ -294,7 +305,7 @@ public class HraciPoleClovek {
                         sb.append("Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)");
                         break;
                     }
-                    hodnota = false;
+                    ok = false;
                     cislo = SeznamLodi.POZICE_DVOJKA;
                     break;
                 }
@@ -303,7 +314,7 @@ public class HraciPoleClovek {
                         sb.append("Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)");
                         break;
                     }
-                    hodnota = false;
+                    ok = false;
                     cislo = SeznamLodi.POZICE_TROJKA;
                     break;
                 }
@@ -312,7 +323,7 @@ public class HraciPoleClovek {
                         sb.append("Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)");
                         break;
                     }
-                    hodnota = false;
+                    ok = false;
                     cislo = SeznamLodi.POZICE_CTYRKA;
                     break;
                 }
@@ -321,12 +332,12 @@ public class HraciPoleClovek {
                         sb.append("Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)");
                         break;
                     }
-                    hodnota = false;
+                    ok = false;
                     cislo = SeznamLodi.POZICE_PETKA;
                     break;
                 }
             }
-            if (hodnota) {
+            if (ok) {
                 vycistiTerminal(text);
                 text.setForegroundColor(TextColor.ANSI.RED);
                 sb.append(" pro pokracovani zmackni enter");
@@ -344,6 +355,14 @@ public class HraciPoleClovek {
         screen.refresh();
         vybranaLod = SeznamLodi.lode.get(Integer.parseInt(vstup) - 1 + cislo);
         return vybranaLod;
+    }
+
+    public Bunka[][] getHracPole() {
+        return hracPole;
+    }
+
+    public SeznamUmistenychLodi getuLode() {
+        return uLode;
     }
 
     public void umisteniLodi(Lod pLod) throws IOException {
@@ -408,7 +427,7 @@ public class HraciPoleClovek {
             } else {
                 // TODO REVIEW: citelnejsi je finalni kopii a umisteni lode umistit ZA cyklus kontrolujici platnost vstupu.
                 Pomucky.kopiePoleDoPole(sloupec - 1, radek - 1, maska, uLode.hraciPole);
-                Pomucky.vytisknuti2DPole(uLode.hraciPole, hrac, false, sloupec + ZACATEK_HRACPOLE_X, radek + ZACATEK_HRACPOLE_Y);
+                Pomucky.vytisknuti2DPole(uLode.hraciPole, hrac, false, ZACATEK_HRACPOLE_X, ZACATEK_HRACPOLE_Y);
                 //TODO : pridat moznost rotace
                 uLode.pridaniDoSeznamu(new UmistenaLod(pLod, sloupec, radek, 0));
                 hodnota = false;
@@ -420,8 +439,11 @@ public class HraciPoleClovek {
     public void umisteniLodi() throws IOException {
         // TODO REVIEW: Obsahy poli NEJDE porovnavat pomoci ==, rovnitko porovna
         // zda jsou pole 'stejny objekt' (stejna reference) ! 
-        while (!(poctyULodi == POCTYLODI)) {
-            umisteniLodi(vybraniLodi());
+        while (!(Arrays.equals(poctyULodi, POCTYLODI) )) {
+            Lod l = vybraniLodi();
+            if (l != null) {
+                umisteniLodi(l);
+            }
         }
     }
 
@@ -434,6 +456,5 @@ public class HraciPoleClovek {
         }
     }
     //TODO : ukazani, kde by byla lod
-    private static final int ZACATEK_HRACPOLE_X = 3;
-    private static final int ZACATEK_HRACPOLE_Y = 2;
+    
 }
