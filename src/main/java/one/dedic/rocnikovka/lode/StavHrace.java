@@ -42,8 +42,6 @@ public class StavHrace {
         StringBuilder sb = new StringBuilder();
         boolean hodnota = true;
         while (hodnota) {
-            // TODO REVIEW: cely blok kodu, ktery cte radek:sloupec je (funkcne) totozny
-            // s blokem v HraciPoleClovek vc. osetreni chyb atd td.
             while (true) {
                 String vystup = "Napis pozici lodi (a1; A1)";
                 String vstup = prectiVstup(vystup.length(), 0, graphics, screen);
@@ -53,7 +51,6 @@ public class StavHrace {
                 graphics.setForegroundColor(TextColor.ANSI.RED);
                 vystup = "";
 
-                // TODO REVIEW: konzistence: v prvni casti podminky 'a', v druhe casti 97 (kod 'a').
                 if ((vstup1 - 'a') > 10 || (vstup1 - 97) < 0) {
                     sb.append("Mas moc velke/male cislo sloupce");
                 }
@@ -84,8 +81,7 @@ public class StavHrace {
 
                 }
                 case VODA: {
-                    // TODO REVIEW: pozor, zapis do LOKALNI prommene policko, ne do hraciho pole !
-                    policko = VEDLE;
+                    pocitac[radek][sloupec] = VEDLE;
                     Pomucky.vycistiTerminal(graphics);
                     graphics.putString(0, 0, "Vedle");
                     screen.refresh();
@@ -108,7 +104,6 @@ public class StavHrace {
                         policko = STRELENA;
                         graphics.putString(0, 0, "Zasah, hrajes dal");
                     }
-                    // TODO REVIEW: pri potopeni se oznaci jako 'potopena' pouze JEDINE policko (to naposledy zasazene) ?
                     screen.refresh();
                     break;
                 }

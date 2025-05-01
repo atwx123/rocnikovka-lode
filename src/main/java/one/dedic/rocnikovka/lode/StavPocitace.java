@@ -39,6 +39,9 @@ public class StavPocitace {
         this.clovek = clovek;
         for (int a = 0; a < clovek.length; a++) {
             for (int b = 0; b < clovek[a].length; b++) {
+                if (clovek[a][b] == null) {
+                    continue;
+                }
                 if (clovek[a][b].jeNestrelene()) {
                     Collections.addAll(this.kamStrilet, a, b);
                 }

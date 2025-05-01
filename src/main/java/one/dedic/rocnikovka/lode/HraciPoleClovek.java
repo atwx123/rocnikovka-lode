@@ -30,6 +30,7 @@ import static one.dedic.rocnikovka.lode.Pomucky.maskaLodi;
 import static one.dedic.rocnikovka.lode.Pomucky.prectiVstup;
 import static one.dedic.rocnikovka.lode.Pomucky.vycistiTerminal;
 import static one.dedic.rocnikovka.lode.SeznamLodi.POCTYLODI;
+import static one.dedic.rocnikovka.lode.SeznamLodi.POCTYTYPU;
 import static one.dedic.rocnikovka.lode.SeznamLodi.lode;
 
 /**
@@ -42,7 +43,7 @@ public class HraciPoleClovek {
     private final TextGraphics hrac;
     private final TextGraphics hraciPole;
     private Screen screen;
-    private Bunka[][] hracPole = new Bunka[10][10];
+    private Bunka[][] hracPole;
     private SeznamUmistenychLodi uLode = new SeznamUmistenychLodi();
     private int[] poctyULodi = {0, 0, 0, 0, 0};
     TextGraphics text;
@@ -61,6 +62,7 @@ public class HraciPoleClovek {
         this.hraciPole = hrac.newTextGraphics(new TerminalPosition(0, 0), new TerminalSize(24, 15));
         this.screen = screen;
         this.text = hrac.newTextGraphics(new TerminalPosition(25, 0), new TerminalSize(45, 50));
+        hracPole = uLode.hraciPole;
         ramecek();
     }
 
@@ -82,8 +84,6 @@ public class HraciPoleClovek {
         hraciPole.putString(23, 12, Character.toString(Symbols.SINGLE_LINE_BOTTOM_RIGHT_CORNER));
     }
 
-    
-
     public Lod vybraniLodi() throws IOException {
         boolean ok = true;
         StringBuilder sb = new StringBuilder();
@@ -93,7 +93,12 @@ public class HraciPoleClovek {
         vycistiTerminal(text);
         text.setForegroundColor(TextColor.ANSI.DEFAULT);
         int velikostLode = 0;
+        int pocet = 0;
+        int pozice = 0;
         while (ok) {
+            text.setForegroundColor(TextColor.ANSI.DEFAULT);
+            vycistiTerminal(text);
+            screen.refresh();
             //TODO : reset
             /*
 //            text.putString(0, 0, vystup);
@@ -102,175 +107,138 @@ public class HraciPoleClovek {
             vstup = Pomucky.prectiVstup(writer.getCursorPosition(), text, screen);
              */
             vstup = Pomucky.vyzvaAVstup(0, 0, "Napis velikost lodi (u - ulozeni, n - nahrani)", text, screen);
-            int pozice = 0;
-            int pocet = 0;
+            pozice = 0;
+            pocet = 0;
+            if (vstup.equals("")) {
+                text.setForegroundColor(TextColor.ANSI.RED);
+                vycistiTerminal(text);
+                Pomucky.vyzvaAVstup(0, 0, "neplatny vstup, pro pokracovani zmackni enter", text, screen);
+                text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                continue;
+            }
             if (vstup.equals("u")) {
                 Pomucky.ukladani(uLode, false);
                 Pomucky.vycistiTerminal(text);
                 Pomucky.vyzvaAVstup(0, 0, "Hra byla ulozena", text, screen);
                 continue;
             } else {
-            if (vstup.equals("n")) {
-                try {
-                    UlozenaHra hra = Pomucky.nahravani2();
-                    uLode = hra.getClovek();
-                    dopocitaniLodi();
-                    if (hra.getStavPocitace() != null) {
-                        this.ulozenaHra = hra;
-                        return null;
-                    }
-                    // uLode = Pomucky.nahravani(false);
-                } catch (IOException vyjimka) {
-                    vycistiTerminal(text);
-                    text.setForegroundColor(TextColor.ANSI.RED);
-                    text.putString(0, 0, vyjimka.getMessage());
-                    
-                    continue;
-                }
-                // TODO REVIEW: Vypada to, ze bude nasledovat hlaska " pro pokracovani zmackni enter". Je to v poradku ?
-            } else {
-            vystup = "Mel by jsi az moc lodi ";
-            sb.append(vystup);
-            
-            switch (vstup) {
-                case "1": {
-                    if (poctyULodi[0] < POCTYLODI[0]) {
-                        pozice = SeznamLodi.POZICE_JEDNICKA;
-                        pocet = SeznamLodi.POZICE_DVOJKA - SeznamLodi.POZICE_JEDNICKA;
-                        ok = false;
-                        poctyULodi[0]++;
-                        break;
-                    } else {
-                        // TODO REVIEW: Vysledny MOZNA bude: "Mel by jsi az moc lodi jedna pro pokracovani zmackni enter"
-                        // a/ gramatika
-                        // b/ opravdu je treba rozdelit hlasku chyby "Mel by jsi az moc lodi ... pro pokracovani zmackni enter"
-                        //    do 2 prikazu "tak daleko" od sebe ?
-                        sb.append("jedna");
-                        break;
-                    }
-                }
-                case "2": {
-                    if (poctyULodi[1] < POCTYLODI[1]) {
-                        pozice = SeznamLodi.POZICE_DVOJKA;
-                        pocet = SeznamLodi.POZICE_TROJKA - SeznamLodi.POZICE_DVOJKA;
-                        ok = false;
-                        poctyULodi[1]++;
-                        break;
-                    } else {
-                        sb.append("dva");
-                        break;
-                    }
-                }
-                case "3": {
-                    if (poctyULodi[2] < POCTYLODI[2]) {
-                        pozice = SeznamLodi.POZICE_TROJKA;
-                        pocet = SeznamLodi.POZICE_CTYRKA - SeznamLodi.POZICE_TROJKA;
-                        ok = false;
-                        poctyULodi[2]++;
-                        break;
+                if (vstup.equals("n")) {
+                    try {
+                        UlozenaHra hra = Pomucky.nahravani2();
+                        uLode = hra.getClovek();
+                        hracPole = uLode.hraciPole;
+                        dopocitaniLodi();
+                        if (hra.getStavPocitace() != null) {
+                            this.ulozenaHra = hra;
+                            return null;
+                        }
+                        Pomucky.vytisknuti2DPole(hracPole, hraciPole, false, ZACATEK_HRACPOLE_X, ZACATEK_HRACPOLE_Y);
+                        // uLode = Pomucky.nahravani(false);
+                    } catch (IOException vyjimka) {
+                        vycistiTerminal(text);
+                        text.setForegroundColor(TextColor.ANSI.RED);
+                        text.putString(0, 0, vyjimka.getMessage());
 
-                    } else {
-                        sb.append("tri");
-                        break;
+                        continue;
                     }
-                }
-                case "4": {
-                    if (poctyULodi[3] < POCTYLODI[3]) {
-                        pozice = SeznamLodi.POZICE_CTYRKA;
-                        pocet = SeznamLodi.POZICE_PETKA - SeznamLodi.POZICE_CTYRKA;
-                        ok = false;
-                        poctyULodi[3]++;
-                        break;
-
-                    } else {
-                        sb.append("ctyri");
-                        break;
-                    }
-                }
-                case "5": {
-                    if (poctyULodi[4] < POCTYLODI[4]) {
-                        pozice = SeznamLodi.POZICE_PETKA;
-                        pocet = lode.size() - SeznamLodi.POZICE_PETKA;
-                        ok = false;
-                        poctyULodi[4]++;
-
-                        break;
-                    } else {
-                        sb.append("pet");
-                        break;
+                } else {
+                    try {
+                        velikostLode = Integer.parseInt(vstup);
+                    } catch (NumberFormatException vyjimka) {
+                        text.setForegroundColor(TextColor.ANSI.RED);
+                        Pomucky.vycistiTerminal(text);
+                        Pomucky.vyzvaAVstup(0, 0, "neplatny vstup (neni cislo), pro pokracovani stiskni enter", text, screen);
+                        text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                        continue;
                     }
 
-                }
-                default: {
-                    // TODO REVIEW: zde se napise:
-                    // "Mel by jsi az moc lodi  pro pokracovani zmackni enter" - ale uzivatel
-                    // napsal "necislo", takze ted nevi, co vlastne udelal spatne.
-                    vycistiTerminal(text);
-                    text.setForegroundColor(TextColor.ANSI.RED);
-                    sb.append(" pro pokracovani zmackni enter");
-                    // TODO REVIEW: pouzit vyzvaAVstup, zalamuje text.
-                    text.putString(0, 0, sb.toString());
-                    // TODO: text namisto graphics
-                    prectiVstup(sb.length(), 0, graphics, screen);
-                    text.setForegroundColor(TextColor.ANSI.DEFAULT);
-                    // TODO REVIEW: break zpusobi preruse `switch' ale znovu vypise chybovou hlasku.
-                    break;
-                }
-                
-            
+                    switch (vstup) {
+                        case "1": {
+                            if (poctyULodi[0] < POCTYLODI[0]) {
+                                pozice = SeznamLodi.POZICE_JEDNICKA;
+                                pocet = SeznamLodi.POZICE_DVOJKA - SeznamLodi.POZICE_JEDNICKA;
+                                ok = false;
+                                poctyULodi[0]++;
+                                continue;
+                            } else {
+                                vystup = "jedna";
+                                break;
+                            }
+                        }
+                        case "2": {
+                            if (poctyULodi[1] < POCTYLODI[1]) {
+                                pozice = SeznamLodi.POZICE_DVOJKA;
+                                pocet = SeznamLodi.POZICE_TROJKA - SeznamLodi.POZICE_DVOJKA;
+                                ok = false;
+                                poctyULodi[1]++;
+                                continue;
+                            } else {
+                                vystup = "dva";
+                                break;
+                            }
+                        }
+                        case "3": {
+                            if (poctyULodi[2] < POCTYLODI[2]) {
+                                pozice = SeznamLodi.POZICE_TROJKA;
+                                pocet = SeznamLodi.POZICE_CTYRKA - SeznamLodi.POZICE_TROJKA;
+                                ok = false;
+                                poctyULodi[2]++;
+                                continue;
+                            } else {
+                                vystup = "tri";
+                                break;
+                            }
+                        }
+                        case "4": {
+                            if (poctyULodi[3] < POCTYLODI[3]) {
+                                pozice = SeznamLodi.POZICE_CTYRKA;
+                                pocet = SeznamLodi.POZICE_PETKA - SeznamLodi.POZICE_CTYRKA;
+                                ok = false;
+                                poctyULodi[3]++;
+                                continue;
+                            } else {
+                                vystup = "ctyri";
+                                break;
+                            }
+                        }
+                        case "5": {
+                            if (poctyULodi[4] < POCTYLODI[4]) {
+                                pozice = SeznamLodi.POZICE_PETKA;
+                                pocet = lode.size() - SeznamLodi.POZICE_PETKA;
+                                ok = false;
+                                poctyULodi[4]++;
+                                continue;
+                            } else {
+                                vystup = "pet";
+                                break;
+                            }
 
-                    }   
+                        }
+                        default: {
+                            vycistiTerminal(text);
+                            text.setForegroundColor(TextColor.ANSI.RED);
+                            Pomucky.vyzvaAVstup(0, 0, "neplatna velikost lodi (1-5), pro pokracovani zmackni enter", text, screen);
+                            text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                            continue;
+                        }
+
+                    }
                 }
             }
-        
-            if (!ok) {
-                // TODO REVIEW: tento kod se pousti tehdy a jen tehdy, kdyz vzapeti skonci
-                // obklopujici cyklus `while'. Dalsi kod ve `while` jiz nenasleduje (cely zbytek je 
-                // v else vetvi). Je prehlednejsi umistit kod BEZ podminky ZA konec cyklu:
-                // while (podminka) {
-                // ...
-                //    if (!podminka) {
-                //      .// kod
-                //    }
-                // }
-                // ---->
-                // while (podminka) {
-                // ...
-                // }
-                // kod
-                
-                int delka = 0;
-                int radek = 0;
-                int poradi = 1;
 
-                for (int a = 0; a < pocet; a++) {
-                    if (delka * 2 + a * 2 + lode.get(a + pozice).getVizual()[0].length*2 >= 35) {
-                        delka = 0;
-                        radek++;
-                    }
-                    text.putString(2 + delka * 2 + a * 2, 2 + radek * 5, poradi + ".");
-                    Pomucky.vytiskniLod(3 + delka * 2 + a * 2, 3 + radek * 5, lode.get(a + pozice).getVizual(), text, false);
-                    delka += lode.get(a + pozice).getVizual()[0].length;
-                    velikostLode = Integer.parseInt(vstup);
-                    screen.refresh();
-                    poradi++;
+            text.setForegroundColor(TextColor.ANSI.RED);
+            vycistiTerminal(text);
+            Pomucky.vyzvaAVstup(0, 0, "Mel bys az moc lodi velikosti " + vystup + ", pro pokracovani zmackni enter", text, screen);
+            text.setForegroundColor(TextColor.ANSI.DEFAULT);
+            vystup = "";
 
-                }
-
-            } else {
-
-                text.setForegroundColor(TextColor.ANSI.RED);
-                // TODO REVIEW: hodnota 'sb' neni nijak pouzita pro vyzvu/vstup.
-                sb.append("pro pokracovani zmackni enter");
-                Pomucky.vyzvaAVstup(0, 0, vystup, text, screen);
-                // TODO REVIEW: vyzvaAVstup ceka na vstup. Pak se ZNOVU ceka na vstup.                
-                screen.refresh();
-                prectiVstup(vystup.length(), 0, graphics, screen);
-                text.setForegroundColor(TextColor.ANSI.DEFAULT);
-                // TODO REVIEW: Pokud uzivatel zada "1" a ma moc lodi, a nasledne OPET "1"
-                // bude se v `sb' dale pridavat " jedna" " jedna" ... a postupne se vypisovat vice a vice
-            }
         }
+        velikostLode = Integer.parseInt(vstup);
+        vycistiTerminal(text);
+        int delka = 0;
+        int radek = 0;
+        int poradi = 1;
+
         sb = new StringBuilder();
         ok = true;
         Pomucky.vycistiTerminal(0, 0, 2, 35, text);
@@ -278,22 +246,50 @@ public class HraciPoleClovek {
         ok = true;
         Lod vybranaLod;
         int cislo = 0;
+        int poziceLodi = 0;
         while (ok) {
-            // TODO REVIEW: pro vyzvu a nasledny vstup mame funkci, ta zaroven resi umisteni
-            // kurzoru podle delky vyzvy v parametru. Prirazeni do pomocne promenne je pak zbytecne.
-            vystup = "Vyber si tvar lode";
-            text.putString(0, 0, vystup);
-            screen.refresh();
-            vstup = Pomucky.prectiVstup(new TerminalPosition(vystup.length(), 0), text, screen);
-            // TODO REVIEW: Nevyzkouseny kod: parseInt muze hazet NumberFormatException pro ne-cisla,
-            // neni osetreno.
-            int tvarLode = Integer.parseInt(vstup) - 1;
+            vycistiTerminal(text);
+            text.setForegroundColor(TextColor.ANSI.DEFAULT);
+            for (int a = 0; a < pocet; a++) {
+                if (delka * 2 + a * 2 + lode.get(a + pozice).getVizual()[0].length * 2 >= 35) {
+                    delka = 0;
+                    radek++;
+                }
+                text.putString(2 + delka * 2 + a * 2, 2 + radek * 5, poradi + ".");
+                Pomucky.vytiskniLod(3 + delka * 2 + a * 2, 3 + radek * 5, lode.get(a + pozice).getVizual(), text, false);
+                delka += lode.get(a + pozice).getVizual()[0].length;
+
+                screen.refresh();
+                poradi++;
+
+            }
+            delka = 0;
+            radek = 0;
+            poradi = 1;
+
+            vstup = Pomucky.vyzvaAVstup(0, 0, "Vyber si tvar lode", text, screen);
+            if (vstup.equals("")) {
+                text.setForegroundColor(TextColor.ANSI.RED);
+                vycistiTerminal(text);
+                Pomucky.vyzvaAVstup(0, 0, "neplatny vstup, pro pokracovani zmackni enter", text, screen);
+                text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                continue;
+            }
+            int tvarLode = -1;
+            try {
+                tvarLode = Integer.parseInt(vstup) - 1;
+            } catch (NumberFormatException vyjimka) {
+                text.setForegroundColor(TextColor.ANSI.RED);
+                vycistiTerminal(text);
+                Pomucky.vyzvaAVstup(0, 0, "Neplatny vstup, pro pokracovani zmackni enter", text, screen);
+                text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                continue;
+            }
+
             switch (velikostLode) {
                 case 1: {
-                    // TODO REVIEW: pocty lod konkretniho typu jsou PREDPOCITANE v Pomucky.POCTY_TYPU.
-                    // Indexy 'bloku' tvaru lodi daneho typu jsou pripravene v Pomucky.ZACATKY  
-                    if (tvarLode > SeznamLodi.POZICE_DVOJKA - SeznamLodi.POZICE_JEDNICKA) {
-                        sb.append("Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)");
+                    if (tvarLode >= POCTYTYPU[0]) {
+                        vystup = "Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)";
                         break;
                     }
                     ok = false;
@@ -301,8 +297,8 @@ public class HraciPoleClovek {
                     break;
                 }
                 case 2: {
-                    if (tvarLode > SeznamLodi.POZICE_TROJKA - SeznamLodi.POZICE_DVOJKA) {
-                        sb.append("Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)");
+                    if (tvarLode >= POCTYTYPU[1]) {
+                        vystup = "Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)";
                         break;
                     }
                     ok = false;
@@ -310,8 +306,8 @@ public class HraciPoleClovek {
                     break;
                 }
                 case 3: {
-                    if (tvarLode > SeznamLodi.POZICE_CTYRKA - SeznamLodi.POZICE_TROJKA) {
-                        sb.append("Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)");
+                    if (tvarLode >= POCTYTYPU[2]) {
+                        vystup = "Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)";
                         break;
                     }
                     ok = false;
@@ -319,8 +315,8 @@ public class HraciPoleClovek {
                     break;
                 }
                 case 4: {
-                    if (tvarLode > SeznamLodi.POZICE_PETKA - SeznamLodi.POZICE_CTYRKA) {
-                        sb.append("Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)");
+                    if (tvarLode >= POCTYTYPU[3]) {
+                        vystup = "Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)";
                         break;
                     }
                     ok = false;
@@ -328,8 +324,8 @@ public class HraciPoleClovek {
                     break;
                 }
                 case 5: {
-                    if (tvarLode >= lode.size() - SeznamLodi.POZICE_PETKA) {
-                        sb.append("Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)");
+                    if (tvarLode >= POCTYTYPU[4]) {
+                        vystup = "Vybral jsi lod, ktera neexistuje (vetsi cislo, nez je pocet lodi)";
                         break;
                     }
                     ok = false;
@@ -340,17 +336,22 @@ public class HraciPoleClovek {
             if (ok) {
                 vycistiTerminal(text);
                 text.setForegroundColor(TextColor.ANSI.RED);
-                sb.append(" pro pokracovani zmackni enter");
-                // TODO REVIEW: 2x cteni vstupu.
-                Pomucky.vyzvaAVstup(0, 0, sb.toString(), text, screen);
-                prectiVstup(sb.length(), 0, graphics, screen);
-
+                Pomucky.vyzvaAVstup(0, 0, vystup, text, screen);
                 text.setForegroundColor(TextColor.ANSI.DEFAULT);
             }
+            try {
+                poziceLodi = cislo + Integer.parseInt(vstup) - 1;
+            } catch (NumberFormatException vyjimka) {
+                text.setForegroundColor(TextColor.ANSI.RED);
+                vycistiTerminal(text);
+                Pomucky.vyzvaAVstup(0, 0, "neplatny tvar lodi (neni cislo), pro pokracovani zmackni enter", text, screen);
+                text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                ok = true;
+                continue;
+            }
         }
-        Pomucky.vycistiTerminal(text);
+
         text.putString(0, 0, "Vybral jsi si lod" + vstup + ".");
-        // TODO REVIEW: opakovany vypocet s Integer.parseInt
         Pomucky.vytiskniLod(0, 1, SeznamLodi.lode.get(cislo + Integer.parseInt(vstup) - 1).getVizual(), text, false);
         screen.refresh();
         vybranaLod = SeznamLodi.lode.get(Integer.parseInt(vstup) - 1 + cislo);
@@ -366,80 +367,82 @@ public class HraciPoleClovek {
     }
 
     public void umisteniLodi(Lod pLod) throws IOException {
+
         text.setForegroundColor(TextColor.ANSI.DEFAULT);
-    boolean hodnota = true;
-        int sloupec, radek = -1;
+        boolean ok = true;
+        int sloupec = -1;
+        int radek = -1;
         vycistiTerminal(text);
         StringBuilder sb = new StringBuilder();
-        while (hodnota) {
+        Bunka[][] maska = maskaLodi(pLod);
+        while (ok) {
+            
             while (true) {
+                vycistiTerminal(text);
+                int vstup2 = 0;
                 String vystup = "Napis pozici lodi (a1; A1)";
                 text.putString(0, 0, vystup);
                 String vstup = prectiVstup(new TerminalPosition(vystup.length(), 0), text, screen);
                 vycistiTerminal(0, 0, 12, 35, text);
+                if (vstup.equals("")) {
+                    text.setForegroundColor(TextColor.ANSI.RED);
+                    vycistiTerminal(text);
+                    Pomucky.vyzvaAVstup(0, 0, "neplatna souradnice, pro pokracovani zmackni enter", text, screen);
+                    text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                    continue;
+                }
                 char vstup1 = vstup.toLowerCase().charAt(0);
                 vstup1 -= 'a';
-                int vstup2 = Integer.parseInt(vstup.substring(1));
-                text.setForegroundColor(TextColor.ANSI.RED);
+                try {
+                    vstup2 = Integer.parseInt(vstup.substring(1));
+                } catch (NumberFormatException vyjimka) {
+                    text.setForegroundColor(TextColor.ANSI.RED);
+                    vycistiTerminal(text);
+                    Pomucky.vyzvaAVstup(0, 0, "neplatna souradnice radku (neni cislo), pro pokracovani stiskni enter", text, screen);
+                    text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                    continue;
+                }
+
                 vystup = "";
 
-                // TODO REVIEW: hodnota vstup1 je uz PO odecteni 'a'. 
-                if ((vstup1 - 'a') > 10 || (vstup1 - 97) < 0) {
-                    sb.append("Mas moc velke/male cislo sloupce");
+                if ((vstup1 + pLod.getVizual()[0].length) >= 10 || (vstup1) < 0) {
+                    vystup = ("Mas moc velke/male cislo sloupce");
                 }
 
-                if (vstup2 - 1 > 10 || vstup2 - 1 < 0) {
-                    // TODO REVIEW: V pripade spatneho zadani obou casti souradnic spatne
-                    // bude hlaska "Mas moc velke/male cislo sloupceMas moc velke/male cislo radku"
-                    sb.append("Mas moc velke/male cislo radku");
+                if ((vstup2 - 1 + pLod.getVizual().length) > 10 || vstup2 - 1 < 0) {
+                    vystup = ("Mas moc velke/male cislo radku");
                 }
-
-                // TODO REVIEW: ani jednou nevyzkouseny kod: vystup je vzdy "", pripadna chyba
-                // se akumuluje v "sb".
                 if (!vystup.isEmpty()) {
                     vycistiTerminal(text);
                     text.setForegroundColor(TextColor.ANSI.RED);
-                    sb.append(" pro pokracovani zmackni enter");
-                    text.putString(0, 0, sb.toString());
-                    prectiVstup(sb.length(), 0, graphics, screen);
+                    Pomucky.vyzvaAVstup(0, 0, vystup + ", pro pokracovani zmackni enter", text, screen);
                     text.setForegroundColor(TextColor.ANSI.DEFAULT);
                 } else {
-                    // TODO REVIEW: Opravdu se do sloupce zapise poradi sloupce 0-9 ?? 
-                    radek = vstup2 - 1;
                     sloupec = vstup1;
+                    radek = vstup2 - 1;
                     break;
                 }
             }
             sb = new StringBuilder();
             vycistiTerminal(text);
-            Bunka[][] maska = maskaLodi(pLod);
+            maska = maskaLodi(pLod);
             if (!Pomucky.prekryvani(pLod, uLode.hraciPole, sloupec, radek)) {
                 vycistiTerminal(text);
-                // TODO REIVEW: proc se tu pouziva "sb" pro postupne vytvareni hlaseni, kdyz 
-                // tento blok osetruje zcela novou podminku ?
-                sb.append("prekyvaji se ti lode/lod s okolim jine lode");
                 text.setForegroundColor(TextColor.ANSI.RED);
-                sb.append(" pro pokracovani zmackni enter");
-                // TODO REVIEW: 2x cteni vstupu
-                Pomucky.vyzvaAVstup(0, 0, sb.toString(), text, screen);
-                prectiVstup(sb.length(), 0, graphics, screen);
+                Pomucky.vyzvaAVstup(0, 0, "prekyvaji se ti lode/lod s okolim jine lode, pro pokracovani", text, screen);
                 text.setForegroundColor(TextColor.ANSI.DEFAULT);
-            } else {
-                // TODO REVIEW: citelnejsi je finalni kopii a umisteni lode umistit ZA cyklus kontrolujici platnost vstupu.
-                Pomucky.kopiePoleDoPole(sloupec - 1, radek - 1, maska, uLode.hraciPole);
-                Pomucky.vytisknuti2DPole(uLode.hraciPole, hrac, false, ZACATEK_HRACPOLE_X, ZACATEK_HRACPOLE_Y);
-                //TODO : pridat moznost rotace
-                uLode.pridaniDoSeznamu(new UmistenaLod(pLod, sloupec, radek, 0));
-                hodnota = false;
             }
 
         }
+        Pomucky.kopiePoleDoPole(sloupec - 1, radek - 1, maska, uLode.hraciPole);
+        Pomucky.vytisknuti2DPole(uLode.hraciPole, hrac, false, ZACATEK_HRACPOLE_X, ZACATEK_HRACPOLE_Y);
+        //TODO : pridat moznost rotace
+        uLode.pridaniDoSeznamu(new UmistenaLod(pLod, sloupec, radek, 0));
+        ok = false;
     }
 
     public void umisteniLodi() throws IOException {
-        // TODO REVIEW: Obsahy poli NEJDE porovnavat pomoci ==, rovnitko porovna
-        // zda jsou pole 'stejny objekt' (stejna reference) ! 
-        while (!(Arrays.equals(poctyULodi, POCTYLODI) )) {
+        while (!(Arrays.equals(poctyULodi, POCTYLODI))) {
             Lod l = vybraniLodi();
             if (l != null) {
                 umisteniLodi(l);
@@ -456,5 +459,5 @@ public class HraciPoleClovek {
         }
     }
     //TODO : ukazani, kde by byla lod
-    
+
 }

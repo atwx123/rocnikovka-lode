@@ -67,8 +67,9 @@ public class HraciPolePocitac  {
             0, 0, 0, 0, 0
         };
         for (int velikost = 4; velikost >= 0; velikost--) {
-            boolean hodnota = true;
+            
             while (poctyULodi[velikost] < POCTYLODI[velikost]) {
+                boolean hodnota = true;
                 int kolikratTvar = 0;
                 while (hodnota) {
                     if (kolikratTvar > 2) {
@@ -85,7 +86,7 @@ public class HraciPolePocitac  {
                         int y = random.nextInt(10 - lod.getVizual().length);
                         if (Pomucky.prekryvani(lod, hraciPole, x, y)) {
                             Pomucky.kopiePoleDoPole(x, y, Pomucky.maskaLodi(lod), hraciPole);
-                            // TODO REVIEW: nema se vybrana lod take zaradit do SeznamUmistenychLodi ?
+                            sULodi.pridaniDoSeznamu(new UmistenaLod(lod, x, y, 0));
                             hodnota = false;
                             poctyULodi[velikost]++;
                             try {

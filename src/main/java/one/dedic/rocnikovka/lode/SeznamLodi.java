@@ -127,7 +127,6 @@ public class SeznamLodi {
     public static final int[] POCTYLODI = {
         4, 3, 2, 1, 1
     };
-    //TODO: udelat fci na vyhledavani pomoci id
     public static Lod najdiId (int id) {
         for (Lod lod : lode) {
             if (lod.getId() == id) {

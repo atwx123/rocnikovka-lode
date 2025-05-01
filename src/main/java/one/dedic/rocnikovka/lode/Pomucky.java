@@ -36,6 +36,7 @@ import java.util.Properties;
 import static one.dedic.rocnikovka.lode.Bunka.LOD;
 import static one.dedic.rocnikovka.lode.Bunka.POTOPENA;
 import static one.dedic.rocnikovka.lode.Bunka.STRELENA;
+import static one.dedic.rocnikovka.lode.Bunka.VODA;
 import static one.dedic.rocnikovka.lode.Bunka.ZABRANE;
 
 /**
@@ -74,7 +75,7 @@ public class Pomucky {
                         for (int a = 0; a < text.length(); a++) {
                             graphics.putString(x + a, y, " ");
                         }
-                        return null;
+                        return "";
                     }
                 }
             }
@@ -137,7 +138,7 @@ public class Pomucky {
         for (int a = 0; a < puvodni.length; a++) {
             for (int b = 0; b < puvodni[a].length; b++) {
                 if (puvodni[a][b] == LOD) {
-                    Collections.addAll(chybejici, a, b);
+                    Collections.addAll(chybejici, b, a);
                 }
             }
         }
@@ -149,30 +150,30 @@ public class Pomucky {
             int y = chybejici.get(1) + 1;
             chybejici.remove(0);
             chybejici.remove(0);
-            maska[x][y] = LOD;
-            if (maska[x - 1][y - 1] != LOD) {
-                maska[x - 1][y - 1] = ZABRANE;
+            maska[y][x] = LOD;
+            if (maska[y - 1][x - 1] != LOD) {
+                maska[y - 1][x - 1] = ZABRANE;
             }
-            if (maska[x - 1][y] != LOD) {
-                maska[x - 1][y] = ZABRANE;
+            if (maska[y - 1][x] != LOD) {
+                maska[y - 1][x] = ZABRANE;
             }
-            if (maska[x - 1][y + 1] != LOD) {
-                maska[x - 1][y + 1] = ZABRANE;
+            if (maska[y - 1][x + 1] != LOD) {
+                maska[y - 1][x + 1] = ZABRANE;
             }
-            if (maska[x][y - 1] != LOD) {
-                maska[x][y - 1] = ZABRANE;
+            if (maska[y][x - 1] != LOD) {
+                maska[y][x - 1] = ZABRANE;
             }
-            if (maska[x][y + 1] != LOD) {
-                maska[x][y + 1] = ZABRANE;
+            if (maska[y][x + 1] != LOD) {
+                maska[y][x + 1] = ZABRANE;
             }
-            if (maska[x + 1][y - 1] != LOD) {
-                maska[x + 1][y - 1] = ZABRANE;
+            if (maska[y + 1][x - 1] != LOD) {
+                maska[y + 1][x - 1] = ZABRANE;
             }
-            if (maska[x + 1][y] != LOD) {
-                maska[x + 1][y] = ZABRANE;
+            if (maska[y + 1][x] != LOD) {
+                maska[y + 1][x] = ZABRANE;
             }
-            if (maska[x + 1][y + 1] != LOD) {
-                maska[x + 1][y + 1] = ZABRANE;
+            if (maska[y + 1][x + 1] != LOD) {
+                maska[y + 1][x + 1] = ZABRANE;
             }
 
         }
@@ -183,9 +184,9 @@ public class Pomucky {
         Bunka[][] vLod = lod.getVizual();
         ArrayList<Integer> kde = new ArrayList<>();
         for (int a = 0; a < vLod.length; a++) {
-            for (int b = 0; b < vLod.length; b++) {
+            for (int b = 0; b < vLod[a].length; b++) {
                 if (vLod[a][b] == LOD) {
-                    Collections.addAll(kde, a, b);
+                    Collections.addAll(kde, b, a);
                 }
             }
         }
@@ -204,7 +205,7 @@ public class Pomucky {
             }
             kde.remove(0);
             kde.remove(0);
-            if (hraciPole[tx][ty] == LOD || hraciPole[tx][ty] == ZABRANE) {
+            if (hraciPole[ty][tx] == LOD || hraciPole[ty][tx] == ZABRANE) {
                 return false;
             }
         }
@@ -225,7 +226,6 @@ public class Pomucky {
     public static void kopiePoleDoPole(int x, int y, Bunka[][] maska, Bunka[][] hracPole) {
         for (int a = 0; a < maska.length; a++) {
             for (int b = 0; b < maska[a].length; b++) {
-                // PENDING REVIEW: horni hranice by se mela testovat pomoci pole.length, spise nez konstanty
                 if ((a + y) < 0 || (a + y) > 9) {
                     continue;
                 }
@@ -249,26 +249,26 @@ public class Pomucky {
                 }
                 switch (obsah) {
                     case VODA: {
-                        dvojita.putString(a, b, " ");
+                        dvojita.putString(b, a, " ");
                         break;
                     }
                     case VEDLE: {
-                        dvojita.putString(a, b, Character.toString(Symbols.BULLET));
+                        dvojita.putString(b, a, Character.toString(Symbols.BULLET));
                         break;
                     }
                     case LOD: {
-                        dvojita.putString(a, b, Character.toString(Symbols.BLOCK_SOLID));
+                        dvojita.putString(b, a, Character.toString(Symbols.BLOCK_SOLID));
                         break;
                     }
                     case STRELENA: {
-                        dvojita.putString(a, b, Character.toString(Symbols.BLOCK_MIDDLE));
+                        dvojita.putString(b, a, Character.toString(Symbols.BLOCK_MIDDLE));
                         break;
                     }
                     case POTOPENA: {
-                        dvojita.putString(a, b, Character.toString(Symbols.BLOCK_SPARSE));
+                        dvojita.putString(b, a, Character.toString(Symbols.BLOCK_SPARSE));
                     }
                     case ZABRANE: {
-                        dvojita.putString(a, b, Character.toString(Symbols.BLOCK_DENSE));
+                        dvojita.putString(b, a, Character.toString(Symbols.BLOCK_DENSE));
                     }
 
                 }
@@ -320,6 +320,10 @@ public class Pomucky {
                     if (b > 0) {
                         sb.append(',');
                     }
+                    if (sULodi.hraciPole[poradiP][b] == null) {
+                        sb.append(VODA);
+                        continue;
+                    }
                     sb.append(sULodi.hraciPole[poradiP][b].name());
                 }
                 prop.setProperty(prefix, sb.toString());
@@ -343,7 +347,7 @@ public class Pomucky {
             hra.setPocitac(pocitacLode);
             String obsah = prop.getProperty("pocitac.dalsiStrely");
             StavPocitace stavP = new StavPocitace(clovekLode.hraciPole);
-            if (obsah != null) {
+            if (obsah != null && !obsah.isBlank()) {
                 ArrayList<Integer> strely = new ArrayList();
                 for (String souradnice : obsah.split(";")) {
                     strely.add(Integer.parseInt(souradnice));
@@ -412,7 +416,6 @@ public class Pomucky {
             if (seznam.isEmpty()) {
                 return true;
             }
-            // TODO REVIEW: neosetrene pripady, kdy x/y +- 1 padne mimo rozsah pole
             if (y - 1 < 0) {
                 continue;
             }

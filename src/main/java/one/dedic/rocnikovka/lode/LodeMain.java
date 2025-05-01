@@ -62,7 +62,7 @@ public class LodeMain {
             stavPocitace = clovek.getUlozenaHra().getStavPocitace();
             polePocitace.setsULodi(clovek.getUlozenaHra().getPocitac());
         } else {
-            if (polePocitace.opakUmisteniLodi()) {
+            if (!polePocitace.opakUmisteniLodi()) {
                 scn.stopScreen();
                 return;
             }
