@@ -4,6 +4,8 @@
  */
 package one.dedic.rocnikovka.lode;
 
+import com.googlecode.lanterna.TerminalPosition;
+import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.screen.Screen;
@@ -12,6 +14,7 @@ import static one.dedic.rocnikovka.lode.Bunka.POTOPENA;
 import static one.dedic.rocnikovka.lode.Bunka.STRELENA;
 import static one.dedic.rocnikovka.lode.Bunka.VEDLE;
 import static one.dedic.rocnikovka.lode.Bunka.VODA;
+import static one.dedic.rocnikovka.lode.Bunka.ZABRANE;
 import static one.dedic.rocnikovka.lode.Pomucky.prectiVstup;
 
 /**
@@ -21,11 +24,39 @@ import static one.dedic.rocnikovka.lode.Pomucky.prectiVstup;
 public class StavHrace {
 
     Bunka[][] pocitac;
+    Bunka[][] clovekH;
+    Bunka[][] zasahy = new Bunka[10][10];
     TextGraphics graphics;
     Screen screen;
+    HraciPoleClovek clovek;
+    TextGraphics hGraphics;
+    TextGraphics hPole;
+    TextGraphics hText;
+    TextGraphics pGraphics;
 
-    public StavHrace(Bunka[][] pocitac) {
+    public StavHrace(Bunka[][] pocitac, TextGraphics graphics, Screen screen, HraciPoleClovek clovek) {
         this.pocitac = pocitac;
+        this.graphics = graphics;
+        this.screen = screen;
+        this.clovek = clovek;
+        this.hGraphics = graphics.newTextGraphics(
+                new TerminalPosition(0, 0), new TerminalSize(60, 50));
+        this.hPole = hGraphics.newTextGraphics(new TerminalPosition(0, 0), new TerminalSize(24, 50));
+        this.hText = hGraphics.newTextGraphics(new TerminalPosition(25, 0), new TerminalSize(45, 50));
+        this.pGraphics = graphics.newTextGraphics(new TerminalPosition(60, 0), new TerminalSize(60, 50));
+        this.clovekH = clovek.getHracPole();
+        for (int a = 0; a < pocitac.length; a++) {
+            for (int b = 0; b < pocitac[a].length; b++) {
+                if (pocitac[a][b] == null) {
+                    pocitac[a][b] = VODA;
+                }
+                if (pocitac[a][b].jeNestrelene() || pocitac[a][b] == ZABRANE) {
+                    zasahy[a][b] = VODA;
+                } else {
+                   zasahy[a][b] = pocitac[a][b];
+                }
+            }
+        }
     }
 
     public void setGraphics(TextGraphics graphics) {
@@ -35,36 +66,53 @@ public class StavHrace {
     public void setScreen(Screen screen) {
         this.screen = screen;
     }
-    
-    public void strileni() throws IOException {
+
+    public boolean strileni() throws IOException {
         int radek = -1;
         int sloupec = -1;
         StringBuilder sb = new StringBuilder();
         boolean hodnota = true;
         while (hodnota) {
+            clovek.ramecek(hPole);
+            clovek.ramecek(pGraphics);
+            Pomucky.vytisknuti2DPole(zasahy, pGraphics, true, clovek.ZACATEK_HRACPOLE_X, clovek.ZACATEK_HRACPOLE_Y);
+            Pomucky.vytisknuti2DPole(clovekH, hPole, true, clovek.ZACATEK_HRACPOLE_X, clovek.ZACATEK_HRACPOLE_Y);
+            screen.refresh();
             while (true) {
-                String vystup = "Napis pozici lodi (a1; A1)";
-                String vstup = prectiVstup(vystup.length(), 0, graphics, screen);
-                Pomucky.vycistiTerminal(0, 0, 12, 35, graphics);
+                Pomucky.vycistiTerminal(hText);
+                String vstup = Pomucky.vyzvaAVstup(0, 0, "Napis strelnou pozici (a1; A1)", hText, screen);
+                if (vstup.equals("")) {
+                    Pomucky.vycistiTerminal(hText);
+                    hText.setForegroundColor(TextColor.ANSI.RED);
+                    Pomucky.vyzvaAVstup(0, 0, "Neplatny vstup, pro pokracovani stiskni enter", hText, screen);
+                    hText.setForegroundColor(TextColor.ANSI.DEFAULT);
+                }
                 char vstup1 = vstup.toLowerCase().charAt(0);
-                int vstup2 = Integer.parseInt(vstup.substring(1));
-                graphics.setForegroundColor(TextColor.ANSI.RED);
-                vystup = "";
+                vstup1 -= 'a';
+                int vstup2 = -1;
+                try {
+                vstup2 = Integer.parseInt(vstup.substring(1)) - 1;
+                } catch (NumberFormatException vyjimka) {
+                    Pomucky.vycistiTerminal(hText);
+                    hText.setForegroundColor(TextColor.ANSI.RED);
+                    Pomucky.vyzvaAVstup(0, 0, "Neplatny vstup (neni cislo), pro pokracovani stiskni enter", hText, screen);
+                    hText.setForegroundColor(TextColor.ANSI.DEFAULT);
+                }
+                String vystup = "";
 
-                if ((vstup1 - 'a') > 10 || (vstup1 - 97) < 0) {
-                    sb.append("Mas moc velke/male cislo sloupce");
+                if (vstup1 > 10 || vstup1 < 0) {
+                    vystup = ("Mas moc velke/male cislo sloupce");
                 }
 
                 if (vstup2 > 10 || vstup2 < 0) {
-                    sb.append("Mas moc velke/male cislo radku");
+                    vystup = ("Mas moc velke/male cislo radku");
                 }
 
                 if (!vystup.isEmpty()) {
-                    graphics.setForegroundColor(TextColor.ANSI.RED);
-                    sb.append(" pro pokracovani zmackni enter");
-                    graphics.putString(0, 0, sb.toString());
-                    prectiVstup(sb.length(), 0, graphics, screen);
-                    graphics.setForegroundColor(TextColor.ANSI.DEFAULT);
+                    Pomucky.vycistiTerminal(hText);
+                    hText.setForegroundColor(TextColor.ANSI.RED);
+                    Pomucky.vyzvaAVstup(0, 0, vystup + "pro pokracovani zmackni enter", hText, screen);
+                    hText.setForegroundColor(TextColor.ANSI.DEFAULT);
                 } else {
                     radek = vstup2;
                     sloupec = vstup1;
@@ -73,7 +121,7 @@ public class StavHrace {
             }
             Bunka policko = pocitac[radek][sloupec];
             if (policko == null) {
-                policko = VODA;
+                pocitac[radek][sloupec] = VODA;
             }
 
             switch (policko) {
@@ -81,16 +129,16 @@ public class StavHrace {
 
                 }
                 case VODA: {
-                    pocitac[radek][sloupec] = VEDLE;
-                    Pomucky.vycistiTerminal(graphics);
-                    graphics.putString(0, 0, "Vedle");
+                    pocitac[radek][sloupec] = zasahy[radek][sloupec] =  VEDLE;
+                    Pomucky.vycistiTerminal(hText);
+                    hText.putString(0, 0, "Vedle");
                     screen.refresh();
                     hodnota = false;
                     break;
                 }
                 case VEDLE: {
-                    Pomucky.vycistiTerminal(graphics);
-                    Pomucky.vyzvaAVstup(sloupec, radek, "Vytrelil jsi na pozici, kam jsi uz strilel, vedle", graphics, screen);
+                    Pomucky.vycistiTerminal(hText);
+                    Pomucky.vyzvaAVstup(sloupec, radek, "Vytrelil jsi na pozici, kam jsi uz strilel, vedle", hText, screen);
                     screen.refresh();
                     hodnota = false;
                     break;
@@ -98,19 +146,19 @@ public class StavHrace {
                 case LOD: {
                     Pomucky.vycistiTerminal(graphics);
                     if (Pomucky.potopena(sloupec, radek, pocitac)) {
-                        policko = POTOPENA;
-                        graphics.putString(0, 0, "Zasah, potopena, hrajes dal");
+                        pocitac[radek][sloupec] = zasahy[radek][sloupec] = POTOPENA;
+                        Pomucky.vyzvaAVstup(0, 0, "Zasah, potopena, hrajes dal", hText, screen);
                     } else {
-                        policko = STRELENA;
-                        graphics.putString(0, 0, "Zasah, hrajes dal");
+                        pocitac[radek][sloupec] = zasahy[radek][sloupec] = STRELENA;
+                        Pomucky.vyzvaAVstup(0, 0, "Zasah, hrajes dal", hText, screen);
                     }
                     screen.refresh();
                     break;
                 }
                 case STRELENA:
                 case POTOPENA: {
-                    Pomucky.vycistiTerminal(graphics);
-                    Pomucky.vyzvaAVstup(sloupec, radek, "Vystrelil jsi na pozici, kde uz jsou trosky lodi, vedle", graphics, screen);
+                    Pomucky.vycistiTerminal(hText);
+                    Pomucky.vyzvaAVstup(sloupec, radek, "Vystrelil jsi na pozici, kde uz jsou trosky lodi, vedle", hText, screen);
                     screen.refresh();
                     hodnota = false;
                     break;
@@ -118,11 +166,16 @@ public class StavHrace {
 
             }
         }
+        clovek.ramecek(hPole);
+        clovek.ramecek(pGraphics);
+        Pomucky.vytisknuti2DPole(pocitac, pGraphics, true, clovek.ZACATEK_HRACPOLE_X, clovek.ZACATEK_HRACPOLE_Y);
+        Pomucky.vytisknuti2DPole(clovekH, hPole, true, clovek.ZACATEK_HRACPOLE_X, clovek.ZACATEK_HRACPOLE_Y);
+        screen.refresh();
         if (Pomucky.konecHry(pocitac)) {
-            graphics.setForegroundColor(TextColor.ANSI.CYAN);
-            Pomucky.vyzvaAVstup(0, 0, "VYHRAL JSI, gratulace (pro ukonceni stiskni enter)", graphics, screen);
-            
+            return true;
+
         }
+        return false;
     }
 
 }

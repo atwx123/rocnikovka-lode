@@ -48,8 +48,8 @@ public class HraciPoleClovek {
     private int[] poctyULodi = {0, 0, 0, 0, 0};
     TextGraphics text;
     UlozenaHra ulozenaHra;
-    private static final int ZACATEK_HRACPOLE_X = 3;
-    private static final int ZACATEK_HRACPOLE_Y = 2;
+    public static final int ZACATEK_HRACPOLE_X = 3;
+    public static final int ZACATEK_HRACPOLE_Y = 2;
 
     public UlozenaHra getUlozenaHra() {
         return ulozenaHra;
@@ -63,25 +63,33 @@ public class HraciPoleClovek {
         this.screen = screen;
         this.text = hrac.newTextGraphics(new TerminalPosition(25, 0), new TerminalSize(45, 50));
         hracPole = uLode.hraciPole;
-        ramecek();
+        ramecek(hraciPole);
     }
 
-    public void ramecek() {
+    public TextGraphics getHrac() {
+        return hrac;
+    }
+
+    public TextGraphics getHraciPole() {
+        return hraciPole;
+    }
+
+    public void ramecek(TextGraphics graphics) {
 
         for (int a = 0; a < 10; a++) {
-            hraciPole.putString(a + 1 < 10 ? 1 : 0, a + 2, a + 1 + "");
+            graphics.putString(a + 1 < 10 ? 1 : 0, a + 2, a + 1 + "");
         }
         for (int b = 0; b < 20; b += 2) {
-            hraciPole.putString(b + 4, 0, Character.toString((char) (b / 2 + 'A')));
+            graphics.putString(b + 4, 0, Character.toString((char) (b / 2 + 'A')));
         }
-        hraciPole.drawLine(2, 2, 2, 11, Symbols.SINGLE_LINE_VERTICAL);
-        hraciPole.drawLine(23, 2, 23, 12, Symbols.SINGLE_LINE_VERTICAL);
-        hraciPole.drawLine(3, 1, 22, 1, Symbols.SINGLE_LINE_HORIZONTAL);
-        hraciPole.drawLine(3, 12, 22, 12, Symbols.SINGLE_LINE_HORIZONTAL);
-        hraciPole.putString(2, 1, Character.toString(Symbols.SINGLE_LINE_TOP_LEFT_CORNER));
-        hraciPole.putString(23, 1, Character.toString(Symbols.SINGLE_LINE_TOP_RIGHT_CORNER));
-        hraciPole.putString(2, 12, Character.toString(Symbols.SINGLE_LINE_BOTTOM_LEFT_CORNER));
-        hraciPole.putString(23, 12, Character.toString(Symbols.SINGLE_LINE_BOTTOM_RIGHT_CORNER));
+        graphics.drawLine(2, 2, 2, 11, Symbols.SINGLE_LINE_VERTICAL);
+        graphics.drawLine(23, 2, 23, 12, Symbols.SINGLE_LINE_VERTICAL);
+        graphics.drawLine(3, 1, 22, 1, Symbols.SINGLE_LINE_HORIZONTAL);
+        graphics.drawLine(3, 12, 22, 12, Symbols.SINGLE_LINE_HORIZONTAL);
+        graphics.putString(2, 1, Character.toString(Symbols.SINGLE_LINE_TOP_LEFT_CORNER));
+        graphics.putString(23, 1, Character.toString(Symbols.SINGLE_LINE_TOP_RIGHT_CORNER));
+        graphics.putString(2, 12, Character.toString(Symbols.SINGLE_LINE_BOTTOM_LEFT_CORNER));
+        graphics.putString(23, 12, Character.toString(Symbols.SINGLE_LINE_BOTTOM_RIGHT_CORNER));
     }
 
     public Lod vybraniLodi() throws IOException {
@@ -100,12 +108,6 @@ public class HraciPoleClovek {
             vycistiTerminal(text);
             screen.refresh();
             //TODO : reset
-            /*
-//            text.putString(0, 0, vystup);
-            screen.refresh();
-//            vstup = Pomucky.prectiVstup(0 + vystup.length(), 0, text, screen);
-            vstup = Pomucky.prectiVstup(writer.getCursorPosition(), text, screen);
-             */
             vstup = Pomucky.vyzvaAVstup(0, 0, "Napis velikost lodi (u - ulozeni, n - nahrani)", text, screen);
             pozice = 0;
             pocet = 0;
@@ -122,18 +124,14 @@ public class HraciPoleClovek {
                 Pomucky.vyzvaAVstup(0, 0, "Hra byla ulozena", text, screen);
                 continue;
             } else {
+
                 if (vstup.equals("n")) {
                     try {
                         UlozenaHra hra = Pomucky.nahravani2();
                         uLode = hra.getClovek();
                         hracPole = uLode.hraciPole;
                         dopocitaniLodi();
-                        if (hra.getStavPocitace() != null) {
-                            this.ulozenaHra = hra;
-                            return null;
-                        }
-                        Pomucky.vytisknuti2DPole(hracPole, hraciPole, false, ZACATEK_HRACPOLE_X, ZACATEK_HRACPOLE_Y);
-                        // uLode = Pomucky.nahravani(false);
+                        return null;
                     } catch (IOException vyjimka) {
                         vycistiTerminal(text);
                         text.setForegroundColor(TextColor.ANSI.RED);
@@ -405,7 +403,7 @@ public class HraciPoleClovek {
 
                 vystup = "";
 
-                if ((vstup1 + pLod.getVizual()[0].length) >= 10 || (vstup1) < 0) {
+                if ((vstup1 + pLod.getVizual()[0].length) > 10 || (vstup1) < 0) {
                     vystup = ("Mas moc velke/male cislo sloupce");
                 }
 
@@ -431,6 +429,9 @@ public class HraciPoleClovek {
                 text.setForegroundColor(TextColor.ANSI.RED);
                 Pomucky.vyzvaAVstup(0, 0, "prekyvaji se ti lode/lod s okolim jine lode, pro pokracovani", text, screen);
                 text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                continue;
+            } else {
+                break;
             }
 
         }

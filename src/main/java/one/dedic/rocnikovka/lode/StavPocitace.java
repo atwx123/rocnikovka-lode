@@ -4,6 +4,7 @@
  */
 package one.dedic.rocnikovka.lode;
 
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.screen.Screen;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.Collections;
 import java.util.Random;
 import static one.dedic.rocnikovka.lode.Bunka.STRELENA;
 import static one.dedic.rocnikovka.lode.Bunka.VEDLE;
+import static one.dedic.rocnikovka.lode.Bunka.ZABRANE;
 import static one.dedic.rocnikovka.lode.Pomucky.najdiDvojici;
 
 /**
@@ -33,17 +35,17 @@ public class StavPocitace {
     public void setScreen(Screen screen) {
         this.screen = screen;
     }
-    
 
     public StavPocitace(Bunka[][] clovek) {
         this.clovek = clovek;
+        this.kamStrilet = new ArrayList<>();
         for (int a = 0; a < clovek.length; a++) {
             for (int b = 0; b < clovek[a].length; b++) {
                 if (clovek[a][b] == null) {
                     continue;
                 }
                 if (clovek[a][b].jeNestrelene()) {
-                    Collections.addAll(this.kamStrilet, a, b);
+                    Collections.addAll(this.kamStrilet, b, a);
                 }
 
             }
@@ -58,7 +60,7 @@ public class StavPocitace {
         this.potopeni = potopeni;
     }
 
-    public void strileni() {
+    public boolean strileni() {
         boolean ok = true;
         while (ok) {
             int x;
@@ -86,7 +88,7 @@ public class StavPocitace {
 
             switch (policko) {
                 case VODA: {
-                    policko = VEDLE;
+                    clovek[y][x] = VEDLE;
                     ok = false;
                     break;
                 }
@@ -104,7 +106,7 @@ public class StavPocitace {
                         if ((y + 1) < 10) {
                             Collections.addAll(potopeni, x, y + 1);
                         }
-                        policko = STRELENA;
+                        clovek[y][x] = STRELENA;
                     } else {
                         ArrayList<Integer> tecky = Pomucky.obteckujLod(x, y, clovek);
                         while (!tecky.isEmpty()) {
@@ -114,12 +116,15 @@ public class StavPocitace {
                             kamStrilet.remove(vymazat);
                             kamStrilet.remove(vymazat);
                         }
-                        //TODO: je potopeno?
+                        if (Pomucky.konecHry(clovek)) {
+                            return true;
+                        }
                     }
                     break;
 
                 }
             }
         }
+        return false;
     }
 }

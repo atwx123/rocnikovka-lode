@@ -18,6 +18,7 @@ package one.dedic.rocnikovka.lode;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
@@ -42,28 +43,35 @@ public class LodeMain {
     public static void main(String[] args) throws IOException {
         Terminal t = new DefaultTerminalFactory().setInitialTerminalSize(new TerminalSize(120, 50)).createTerminal();
 
-        Screen scn = new TerminalScreen(t);
+        Screen screen = new TerminalScreen(t);
 
-        scn.startScreen();
+        screen.startScreen();
 
-        TextGraphics graphics = scn.newTextGraphics();
+        TextGraphics graphics = screen.newTextGraphics();
         Pomucky pom = new Pomucky();
-        HraciPoleClovek clovek = new HraciPoleClovek(graphics, scn);
+        HraciPoleClovek clovek = new HraciPoleClovek(graphics, screen);
         SeznamLodi sLodi = new SeznamLodi();
-    
+
         //Pomucky.prectiVstup(0, 0, graphics, scn);
 //        
 //        HraciPolePocitac pocitac = new HraciPolePocitac(scn, graphics);
 //       pocitac.opakUmisteniclovek.umisteniLodi(SeznamLodi.lode.get(11));Lodi();
         StavPocitace stavPocitace = null;
         clovek.umisteniLodi();
-        HraciPolePocitac polePocitace = new HraciPolePocitac(scn, graphics);
+        HraciPolePocitac polePocitace = new HraciPolePocitac(screen, graphics);
         if (clovek.getUlozenaHra() != null && clovek.getUlozenaHra().getStavPocitace() != null) {
             stavPocitace = clovek.getUlozenaHra().getStavPocitace();
             polePocitace.setsULodi(clovek.getUlozenaHra().getPocitac());
         } else {
+            for (int a = 0; a < clovek.getHracPole().length; a++) {
+                for (int b = 0; b < clovek.getHracPole()[a].length; b++) {
+                    if (clovek.getHracPole()[a][b] == Bunka.ZABRANE) {
+                        clovek.getHracPole()[a][b] = Bunka.VODA;
+                    }
+                }
+            }
             if (!polePocitace.opakUmisteniLodi()) {
-                scn.stopScreen();
+                screen.stopScreen();
                 return;
             }
             stavPocitace = new StavPocitace(clovek.getHracPole());
@@ -73,7 +81,22 @@ public class LodeMain {
             hra.setStavPocitace(stavPocitace);
             Pomucky.ukladani(hra);
         }
-        StavHrace stavHrace = new StavHrace(polePocitace.getHraciPole());
+        StavHrace stavHrace = new StavHrace(polePocitace.getHraciPole(), graphics, screen, clovek);
+        while (true) {
+            
+            if (stavHrace.strileni()) {
+                graphics.setForegroundColor(TextColor.ANSI.CYAN);
+                Pomucky.vyzvaAVstup(0, 0, "VYHRAL JSI, gratulace (pro ukonceni stiskni enter)", graphics, screen);
+                break;
+            }
+            if (stavPocitace.strileni()) {
+                graphics.setForegroundColor(TextColor.ANSI.CYAN);
+                Pomucky.vyzvaAVstup(0, 0, "VYHRAL POCITAC, hodne stesti priste (pro ukonceni stiskni enter)", graphics, screen);
+                break;
+            }
+        }
+        screen.stopScreen();
+        System.exit(0);
     }
 
 }

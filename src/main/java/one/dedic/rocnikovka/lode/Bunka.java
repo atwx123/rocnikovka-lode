@@ -52,7 +52,7 @@ public enum Bunka {
         return this.ordinal() >= LOD.ordinal();
     }
     public boolean jeNestrelene() {
-        if (this.ordinal() == 0 && this.ordinal() == 3) {
+        if (this.ordinal() == 0 || this.ordinal() == 3) {
             return true;
         }
         return false;
