@@ -32,13 +32,13 @@ import static one.dedic.rocnikovka.lode.SeznamLodi.POCTYTYPU;
  *
  * @author aja
  */
-public class HraciPolePocitac  {
+public class HraciPolePocitac {
+
     SeznamUmistenychLodi sULodi = new SeznamUmistenychLodi();
     private Bunka[][] hraciPole;
     Random random = new Random();
     private Screen screen;
     private TextGraphics graphics;
-    
 
     public HraciPolePocitac(Screen screen, TextGraphics graphics) {
         this.screen = screen;
@@ -58,16 +58,14 @@ public class HraciPolePocitac  {
     public Bunka[][] getHraciPole() {
         return hraciPole;
     }
-    
-    
 
-    private boolean umisteniLodi()  {
+    private boolean umisteniLodi() {
         hraciPole = new Bunka[10][10];
         int[] poctyULodi = {
             0, 0, 0, 0, 0
         };
         for (int velikost = 4; velikost >= 0; velikost--) {
-            
+
             while (poctyULodi[velikost] < POCTYLODI[velikost]) {
                 boolean hodnota = true;
                 int kolikratTvar = 0;
@@ -85,14 +83,14 @@ public class HraciPolePocitac  {
                         int x = random.nextInt(10 - lod.getVizual()[0].length);
                         int y = random.nextInt(10 - lod.getVizual().length);
                         if (Pomucky.prekryvani(lod, hraciPole, x, y)) {
-                            Pomucky.kopiePoleDoPole(x, y, Pomucky.maskaLodi(lod), hraciPole);
+                            Pomucky.kopiePoleDoPole(x, y, Pomucky.maskaLode(lod), hraciPole);
                             sULodi.pridaniDoSeznamu(new UmistenaLod(lod, x, y, 0));
                             hodnota = false;
                             poctyULodi[velikost]++;
                             try {
-                            screen.refresh();
+                                screen.refresh();
                             } catch (IOException vyjimka) {
-                                
+
                             }
                             break;
                         }
@@ -106,8 +104,8 @@ public class HraciPolePocitac  {
         return true;
 
     }
-    
-    public boolean opakUmisteniLodi () throws IOException {
+
+    public boolean opakUmisteniLodi() throws IOException {
         for (int a = 0; a < 6; a++) {
             if (umisteniLodi()) {
                 return true;

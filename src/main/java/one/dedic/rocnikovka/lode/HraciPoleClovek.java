@@ -26,12 +26,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static one.dedic.rocnikovka.lode.Pomucky.maskaLodi;
 import static one.dedic.rocnikovka.lode.Pomucky.prectiVstup;
 import static one.dedic.rocnikovka.lode.Pomucky.vycistiTerminal;
 import static one.dedic.rocnikovka.lode.SeznamLodi.POCTYLODI;
 import static one.dedic.rocnikovka.lode.SeznamLodi.POCTYTYPU;
 import static one.dedic.rocnikovka.lode.SeznamLodi.lode;
+import static one.dedic.rocnikovka.lode.Pomucky.maskaLode;
 
 /**
  *
@@ -372,9 +372,9 @@ public class HraciPoleClovek {
         int radek = -1;
         vycistiTerminal(text);
         StringBuilder sb = new StringBuilder();
-        Bunka[][] maska = maskaLodi(pLod);
+        Bunka[][] maska = maskaLode(pLod);
         while (ok) {
-            
+
             while (true) {
                 vycistiTerminal(text);
                 int vstup2 = 0;
@@ -423,7 +423,7 @@ public class HraciPoleClovek {
             }
             sb = new StringBuilder();
             vycistiTerminal(text);
-            maska = maskaLodi(pLod);
+            maska = maskaLode(pLod);
             if (!Pomucky.prekryvani(pLod, uLode.hraciPole, sloupec, radek)) {
                 vycistiTerminal(text);
                 text.setForegroundColor(TextColor.ANSI.RED);

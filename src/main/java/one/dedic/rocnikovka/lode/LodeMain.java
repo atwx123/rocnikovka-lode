@@ -83,7 +83,7 @@ public class LodeMain {
         }
         StavHrace stavHrace = new StavHrace(polePocitace.getHraciPole(), graphics, screen, clovek);
         while (true) {
-            
+
             if (stavHrace.strileni()) {
                 graphics.setForegroundColor(TextColor.ANSI.CYAN);
                 Pomucky.vyzvaAVstup(0, 0, "VYHRAL JSI, gratulace (pro ukonceni stiskni enter)", graphics, screen);

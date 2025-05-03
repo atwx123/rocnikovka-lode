@@ -81,6 +81,9 @@ public class StavPocitace {
                 x = potopeni.remove(cislo);
                 y = potopeni.remove(cislo);
                 cislo = najdiDvojici(x, y, kamStrilet);
+                if (cislo == -1) {
+                    continue;
+                }
                 kamStrilet.remove(cislo);
                 kamStrilet.remove(cislo);
             }

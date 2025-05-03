@@ -18,6 +18,7 @@ package one.dedic.rocnikovka.lode;
 import com.googlecode.lanterna.Symbols;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.DoublePrintingTextGraphics;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.graphics.TextGraphicsWriter;
@@ -131,7 +132,7 @@ public class Pomucky {
         return novePole;
     }
 
-    public static Bunka[][] maskaLodi(Lod lod) {
+    public static Bunka[][] maskaLode(Lod lod) {
         Bunka[][] puvodni = lod.getVizual();
         Bunka[][] maska = new Bunka[puvodni.length + 2][puvodni[0].length + 2];
         ArrayList<Integer> chybejici = new ArrayList<>();
@@ -257,18 +258,32 @@ public class Pomucky {
                         break;
                     }
                     case LOD: {
+                        graphics.setForegroundColor(TextColor.ANSI.GREEN);
                         dvojita.putString(b, a, Character.toString(Symbols.BLOCK_SOLID));
+                        graphics.setForegroundColor(TextColor.ANSI.DEFAULT);
                         break;
                     }
                     case STRELENA: {
+                        graphics.setForegroundColor(TextColor.ANSI.BLUE);
                         dvojita.putString(b, a, Character.toString(Symbols.BLOCK_MIDDLE));
+                        graphics.setForegroundColor(TextColor.ANSI.DEFAULT);
                         break;
                     }
                     case POTOPENA: {
+                        graphics.setForegroundColor(TextColor.ANSI.RED);
                         dvojita.putString(b, a, Character.toString(Symbols.BLOCK_SPARSE));
+                        graphics.setForegroundColor(TextColor.ANSI.DEFAULT);
+                        break;
                     }
                     case ZABRANE: {
-                        dvojita.putString(b, a, Character.toString(Symbols.BLOCK_DENSE));
+                        if (!hra) {
+                             graphics.setForegroundColor(TextColor.ANSI.YELLOW);
+                            dvojita.putString(b, a, Character.toString(Symbols.BLOCK_DENSE));
+                            graphics.setForegroundColor(TextColor.ANSI.DEFAULT);
+                            break;
+                        }
+                        break;
+                       
                     }
 
                 }
@@ -283,7 +298,7 @@ public class Pomucky {
             prop.store(writer, "");
         }
     }
-    
+
     public static void ukladani(UlozenaHra hra) throws IOException {
         Properties prop = new Properties();
         ukladani2("clovek", prop, hra.getClovek(), true);
@@ -295,14 +310,14 @@ public class Pomucky {
                 sb.append(";");
             }
             sb.append(hra.stavPocitace.getPotopeni().get(a));
-            
+
         }
         prop.setProperty(prefix, sb.toString());
         try (FileWriter writer = new FileWriter(new File("ulozenahra.properties"))) {
             prop.store(writer, "");
         }
     }
-    
+
     private static void ukladani2(String prefixSeznamu, Properties prop, SeznamUmistenychLodi sULodi, boolean hra) throws IOException {
         for (int poradiL = 0; poradiL < sULodi.getSeznamULodi().size(); poradiL++) {
             UmistenaLod lod = sULodi.getSeznamULodi().get(poradiL);
@@ -330,7 +345,7 @@ public class Pomucky {
             }
         }
     }
-    
+
     public static UlozenaHra nahravani2() throws IOException {
         Properties prop = new Properties();
         SeznamUmistenychLodi clovekLode;
@@ -382,21 +397,21 @@ public class Pomucky {
                 throw new IOException("Spatna data");
             }
             sULodi.pridaniDoSeznamu(new UmistenaLod(lod, x, y, rotace));
-                kopiePoleDoPole(x, y, maskaLodi(lod), sULodi.hraciPole);
+            kopiePoleDoPole(x, y, maskaLode(lod), sULodi.hraciPole);
 
         }
-            for (int a = 0; a < 10; a++) {
-                String klic = prefixSeznamu + ".radek" + Integer.toString(a + 1);
-                Bunka[][] pole = sULodi.hraciPole;
-                String obsah = prop.getProperty(klic);
-                if (obsah == null) {
-                    return sULodi;
-                }
-                String[] hodnoty = obsah.split(",");
-                for (int b = 0; b < 10; b++) {
-                    pole[a][b] = Bunka.valueOf(hodnoty[b]);
-                }
+        for (int a = 0; a < 10; a++) {
+            String klic = prefixSeznamu + ".radek" + Integer.toString(a + 1);
+            Bunka[][] pole = sULodi.hraciPole;
+            String obsah = prop.getProperty(klic);
+            if (obsah == null) {
+                return sULodi;
             }
+            String[] hodnoty = obsah.split(",");
+            for (int b = 0; b < 10; b++) {
+                pole[a][b] = Bunka.valueOf(hodnoty[b]);
+            }
+        }
         return sULodi;
     }
 
@@ -410,9 +425,9 @@ public class Pomucky {
     public static boolean potopena(int sloupec, int radek, Bunka[][] hraciPole) {
         ArrayList<Integer> seznam = new ArrayList<>();
         Collections.addAll(seznam, radek, sloupec);
-        for (int a = 0; a < seznam.size(); a+=2) {
+        for (int a = 0; a < seznam.size(); a += 2) {
             int y = seznam.get(a);
-            int x = seznam.get(a+1);
+            int x = seznam.get(a + 1);
             if (seznam.isEmpty()) {
                 return true;
             }

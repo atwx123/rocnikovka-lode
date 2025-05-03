@@ -53,7 +53,7 @@ public class StavHrace {
                 if (pocitac[a][b].jeNestrelene() || pocitac[a][b] == ZABRANE) {
                     zasahy[a][b] = VODA;
                 } else {
-                   zasahy[a][b] = pocitac[a][b];
+                    zasahy[a][b] = pocitac[a][b];
                 }
             }
         }
@@ -91,7 +91,7 @@ public class StavHrace {
                 vstup1 -= 'a';
                 int vstup2 = -1;
                 try {
-                vstup2 = Integer.parseInt(vstup.substring(1)) - 1;
+                    vstup2 = Integer.parseInt(vstup.substring(1)) - 1;
                 } catch (NumberFormatException vyjimka) {
                     Pomucky.vycistiTerminal(hText);
                     hText.setForegroundColor(TextColor.ANSI.RED);
@@ -129,9 +129,9 @@ public class StavHrace {
 
                 }
                 case VODA: {
-                    pocitac[radek][sloupec] = zasahy[radek][sloupec] =  VEDLE;
+                    pocitac[radek][sloupec] = zasahy[radek][sloupec] = VEDLE;
                     Pomucky.vycistiTerminal(hText);
-                    hText.putString(0, 0, "Vedle");
+                    Pomucky.vyzvaAVstup(0, 0, "Vedle", hText, screen);
                     screen.refresh();
                     hodnota = false;
                     break;
@@ -168,7 +168,7 @@ public class StavHrace {
         }
         clovek.ramecek(hPole);
         clovek.ramecek(pGraphics);
-        Pomucky.vytisknuti2DPole(pocitac, pGraphics, true, clovek.ZACATEK_HRACPOLE_X, clovek.ZACATEK_HRACPOLE_Y);
+        Pomucky.vytisknuti2DPole(zasahy, pGraphics, true, clovek.ZACATEK_HRACPOLE_X, clovek.ZACATEK_HRACPOLE_Y);
         Pomucky.vytisknuti2DPole(clovekH, hPole, true, clovek.ZACATEK_HRACPOLE_X, clovek.ZACATEK_HRACPOLE_Y);
         screen.refresh();
         if (Pomucky.konecHry(pocitac)) {
