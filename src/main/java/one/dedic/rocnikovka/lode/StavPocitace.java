@@ -7,6 +7,7 @@ package one.dedic.rocnikovka.lode;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.screen.Screen;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -25,16 +26,12 @@ public class StavPocitace {
     ArrayList<Integer> potopeni = new ArrayList<>();
     Random random = new Random();
     Bunka[][] clovek;
-    TextGraphics graphics;
-    Screen screen;
+    StavHrace hrac;
 
-    public void setGraphics(TextGraphics graphics) {
-        this.graphics = graphics;
+    public void setHrac(StavHrace hrac) {
+        this.hrac = hrac;
     }
 
-    public void setScreen(Screen screen) {
-        this.screen = screen;
-    }
 
     public StavPocitace(Bunka[][] clovek) {
         this.clovek = clovek;
@@ -60,7 +57,7 @@ public class StavPocitace {
         this.potopeni = potopeni;
     }
 
-    public boolean strileni() {
+    public boolean strileni() throws IOException{
         boolean ok = true;
         while (ok) {
             int x;
@@ -96,7 +93,8 @@ public class StavPocitace {
                     break;
                 }
                 case LOD: {
-                    if (!Pomucky.potopena(x, y, clovek)) {
+                    clovek[y][x] = STRELENA;
+                    if (!Pomucky.potopena(x, y, clovek, null)) {
                         if ((x - 1) >= 0) {
                             Collections.addAll(potopeni, x - 1, y);
                         }
@@ -109,13 +107,16 @@ public class StavPocitace {
                         if ((y + 1) < 10) {
                             Collections.addAll(potopeni, x, y + 1);
                         }
-                        clovek[y][x] = STRELENA;
+                        
                     } else {
                         ArrayList<Integer> tecky = Pomucky.obteckujLod(x, y, clovek);
                         while (!tecky.isEmpty()) {
                             int sloupec = tecky.remove(0);
                             int radek = tecky.remove(0);
                             int vymazat = najdiDvojici(sloupec, radek, kamStrilet);
+                            if (vymazat == -1) {
+                                continue;
+                            }
                             kamStrilet.remove(vymazat);
                             kamStrilet.remove(vymazat);
                         }
@@ -127,6 +128,7 @@ public class StavPocitace {
 
                 }
             }
+            hrac.vytiskniStav(x, y);
         }
         return false;
     }

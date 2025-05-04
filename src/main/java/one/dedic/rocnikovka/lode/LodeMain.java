@@ -81,15 +81,19 @@ public class LodeMain {
             hra.setStavPocitace(stavPocitace);
             Pomucky.ukladani(hra);
         }
-        StavHrace stavHrace = new StavHrace(polePocitace.getHraciPole(), graphics, screen, clovek);
+        
+        StavHrace stavHrace = new StavHrace(polePocitace.getHraciPole(), graphics, screen, clovek, clovek.getUlozenaHra());
+        stavPocitace.setHrac(stavHrace);
         while (true) {
-
+            
             if (stavHrace.strileni()) {
+                stavHrace.vytiskniStav(-1, -1);
                 graphics.setForegroundColor(TextColor.ANSI.CYAN);
                 Pomucky.vyzvaAVstup(0, 0, "VYHRAL JSI, gratulace (pro ukonceni stiskni enter)", graphics, screen);
                 break;
             }
             if (stavPocitace.strileni()) {
+                stavHrace.vytiskniStav(-1, -1);
                 graphics.setForegroundColor(TextColor.ANSI.CYAN);
                 Pomucky.vyzvaAVstup(0, 0, "VYHRAL POCITAC, hodne stesti priste (pro ukonceni stiskni enter)", graphics, screen);
                 break;

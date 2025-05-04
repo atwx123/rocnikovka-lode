@@ -60,7 +60,10 @@ public class HraciPolePocitac {
     }
 
     private boolean umisteniLodi() {
-        hraciPole = new Bunka[10][10];
+        if (hraciPole == null) {
+            hraciPole = new Bunka[10][10];
+        }
+        
         int[] poctyULodi = {
             0, 0, 0, 0, 0
         };

@@ -112,10 +112,7 @@ public class HraciPoleClovek {
             pozice = 0;
             pocet = 0;
             if (vstup.equals("")) {
-                text.setForegroundColor(TextColor.ANSI.RED);
-                vycistiTerminal(text);
-                Pomucky.vyzvaAVstup(0, 0, "neplatny vstup, pro pokracovani zmackni enter", text, screen);
-                text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                Pomucky.vypisError("neplatny vstup", text, screen);
                 continue;
             }
             if (vstup.equals("u")) {
@@ -131,10 +128,13 @@ public class HraciPoleClovek {
                         uLode = hra.getClovek();
                         hracPole = uLode.hraciPole;
                         dopocitaniLodi();
+                        Pomucky.vytisknuti2DPole(hracPole, hraciPole, false, ZACATEK_HRACPOLE_X, ZACATEK_HRACPOLE_Y);
+                        this.ulozenaHra = hra;
+                        screen.refresh();
                         return null;
                     } catch (IOException vyjimka) {
                         vycistiTerminal(text);
-                        text.setForegroundColor(TextColor.ANSI.RED);
+                        text.setForegroundColor(TextColor.ANSI.RED_BRIGHT);
                         text.putString(0, 0, vyjimka.getMessage());
 
                         continue;
@@ -143,10 +143,7 @@ public class HraciPoleClovek {
                     try {
                         velikostLode = Integer.parseInt(vstup);
                     } catch (NumberFormatException vyjimka) {
-                        text.setForegroundColor(TextColor.ANSI.RED);
-                        Pomucky.vycistiTerminal(text);
-                        Pomucky.vyzvaAVstup(0, 0, "neplatny vstup (neni cislo), pro pokracovani stiskni enter", text, screen);
-                        text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                        Pomucky.vypisError("neplatny vstup (neni cislo)", text, screen);
                         continue;
                     }
 
@@ -213,21 +210,14 @@ public class HraciPoleClovek {
 
                         }
                         default: {
-                            vycistiTerminal(text);
-                            text.setForegroundColor(TextColor.ANSI.RED);
-                            Pomucky.vyzvaAVstup(0, 0, "neplatna velikost lodi (1-5), pro pokracovani zmackni enter", text, screen);
-                            text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                            Pomucky.vypisError("neplatna velikost lodi (1-5)", text, screen);
                             continue;
                         }
 
                     }
                 }
             }
-
-            text.setForegroundColor(TextColor.ANSI.RED);
-            vycistiTerminal(text);
-            Pomucky.vyzvaAVstup(0, 0, "Mel bys az moc lodi velikosti " + vystup + ", pro pokracovani zmackni enter", text, screen);
-            text.setForegroundColor(TextColor.ANSI.DEFAULT);
+            Pomucky.vypisError("Mel bys az moc lodi velikosti " + vystup, text, screen);
             vystup = "";
 
         }
@@ -267,20 +257,14 @@ public class HraciPoleClovek {
 
             vstup = Pomucky.vyzvaAVstup(0, 0, "Vyber si tvar lode", text, screen);
             if (vstup.equals("")) {
-                text.setForegroundColor(TextColor.ANSI.RED);
-                vycistiTerminal(text);
-                Pomucky.vyzvaAVstup(0, 0, "neplatny vstup, pro pokracovani zmackni enter", text, screen);
-                text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                Pomucky.vypisError("neplatny vstup", text, screen);
                 continue;
             }
             int tvarLode = -1;
             try {
                 tvarLode = Integer.parseInt(vstup) - 1;
             } catch (NumberFormatException vyjimka) {
-                text.setForegroundColor(TextColor.ANSI.RED);
-                vycistiTerminal(text);
-                Pomucky.vyzvaAVstup(0, 0, "Neplatny vstup, pro pokracovani zmackni enter", text, screen);
-                text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                Pomucky.vypisError("Neplatny vstup", text, screen);
                 continue;
             }
 
@@ -332,18 +316,12 @@ public class HraciPoleClovek {
                 }
             }
             if (ok) {
-                vycistiTerminal(text);
-                text.setForegroundColor(TextColor.ANSI.RED);
-                Pomucky.vyzvaAVstup(0, 0, vystup, text, screen);
-                text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                Pomucky.vypisError(vystup, text, screen);
             }
             try {
                 poziceLodi = cislo + Integer.parseInt(vstup) - 1;
             } catch (NumberFormatException vyjimka) {
-                text.setForegroundColor(TextColor.ANSI.RED);
-                vycistiTerminal(text);
-                Pomucky.vyzvaAVstup(0, 0, "neplatny tvar lodi (neni cislo), pro pokracovani zmackni enter", text, screen);
-                text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                Pomucky.vypisError("neplatny tvar lodi (neni cislo)", text, screen);
                 ok = true;
                 continue;
             }
@@ -383,10 +361,7 @@ public class HraciPoleClovek {
                 String vstup = prectiVstup(new TerminalPosition(vystup.length(), 0), text, screen);
                 vycistiTerminal(0, 0, 12, 35, text);
                 if (vstup.equals("")) {
-                    text.setForegroundColor(TextColor.ANSI.RED);
-                    vycistiTerminal(text);
-                    Pomucky.vyzvaAVstup(0, 0, "neplatna souradnice, pro pokracovani zmackni enter", text, screen);
-                    text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                    Pomucky.vypisError("neplatna souradnice", text, screen);
                     continue;
                 }
                 char vstup1 = vstup.toLowerCase().charAt(0);
@@ -394,10 +369,7 @@ public class HraciPoleClovek {
                 try {
                     vstup2 = Integer.parseInt(vstup.substring(1));
                 } catch (NumberFormatException vyjimka) {
-                    text.setForegroundColor(TextColor.ANSI.RED);
-                    vycistiTerminal(text);
-                    Pomucky.vyzvaAVstup(0, 0, "neplatna souradnice radku (neni cislo), pro pokracovani stiskni enter", text, screen);
-                    text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                    Pomucky.vypisError("neplatna souradnice radku (neni cislo)", text, screen);
                     continue;
                 }
 
@@ -411,10 +383,7 @@ public class HraciPoleClovek {
                     vystup = ("Mas moc velke/male cislo radku");
                 }
                 if (!vystup.isEmpty()) {
-                    vycistiTerminal(text);
-                    text.setForegroundColor(TextColor.ANSI.RED);
-                    Pomucky.vyzvaAVstup(0, 0, vystup + ", pro pokracovani zmackni enter", text, screen);
-                    text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                    Pomucky.vypisError(vystup, text, screen);
                 } else {
                     sloupec = vstup1;
                     radek = vstup2 - 1;
@@ -425,10 +394,7 @@ public class HraciPoleClovek {
             vycistiTerminal(text);
             maska = maskaLode(pLod);
             if (!Pomucky.prekryvani(pLod, uLode.hraciPole, sloupec, radek)) {
-                vycistiTerminal(text);
-                text.setForegroundColor(TextColor.ANSI.RED);
-                Pomucky.vyzvaAVstup(0, 0, "prekyvaji se ti lode/lod s okolim jine lode, pro pokracovani", text, screen);
-                text.setForegroundColor(TextColor.ANSI.DEFAULT);
+                Pomucky.vypisError("prekyvaji se ti lode/lod s okolim jine lode", text, screen);
                 continue;
             } else {
                 break;

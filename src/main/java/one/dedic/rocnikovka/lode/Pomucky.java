@@ -258,32 +258,32 @@ public class Pomucky {
                         break;
                     }
                     case LOD: {
-                        graphics.setForegroundColor(TextColor.ANSI.GREEN);
+                        dvojita.setForegroundColor(TextColor.ANSI.GREEN);
                         dvojita.putString(b, a, Character.toString(Symbols.BLOCK_SOLID));
-                        graphics.setForegroundColor(TextColor.ANSI.DEFAULT);
+                        dvojita.setForegroundColor(TextColor.ANSI.DEFAULT);
                         break;
                     }
                     case STRELENA: {
-                        graphics.setForegroundColor(TextColor.ANSI.BLUE);
+                        dvojita.setForegroundColor(TextColor.ANSI.BLUE);
                         dvojita.putString(b, a, Character.toString(Symbols.BLOCK_MIDDLE));
-                        graphics.setForegroundColor(TextColor.ANSI.DEFAULT);
+                        dvojita.setForegroundColor(TextColor.ANSI.DEFAULT);
                         break;
                     }
                     case POTOPENA: {
-                        graphics.setForegroundColor(TextColor.ANSI.RED);
+                        dvojita.setForegroundColor(TextColor.ANSI.RED_BRIGHT);
                         dvojita.putString(b, a, Character.toString(Symbols.BLOCK_SPARSE));
-                        graphics.setForegroundColor(TextColor.ANSI.DEFAULT);
+                        dvojita.setForegroundColor(TextColor.ANSI.DEFAULT);
                         break;
                     }
                     case ZABRANE: {
                         if (!hra) {
-                             graphics.setForegroundColor(TextColor.ANSI.YELLOW);
+                            dvojita.setForegroundColor(TextColor.ANSI.YELLOW_BRIGHT);
                             dvojita.putString(b, a, Character.toString(Symbols.BLOCK_DENSE));
-                            graphics.setForegroundColor(TextColor.ANSI.DEFAULT);
+                            dvojita.setForegroundColor(TextColor.ANSI.DEFAULT);
                             break;
                         }
                         break;
-                       
+
                     }
 
                 }
@@ -369,6 +369,7 @@ public class Pomucky {
                 }
                 stavP.setPotopeni(strely);
             }
+            hra.setStavPocitace(stavP);
         }
         return hra;
     }
@@ -418,60 +419,68 @@ public class Pomucky {
     public static String vyzvaAVstup(int x, int y, String vyzva, TextGraphics graphics, Screen screen) throws IOException {
         TextGraphicsWriter writer = new TextGraphicsWriter(graphics);
         writer.setCursorPosition(new TerminalPosition(0, 0));
-        writer.putString(vyzva);
+        writer.putString(vyzva + ": ");
         return Pomucky.prectiVstup(writer.getCursorPosition(), graphics, screen);
     }
+    
+    static void pridejNoveSouradnice(ArrayList<Integer> seznam, int y, int x) {
+        for (int b = 0; b < seznam.size(); b+= 2) {
+            if (seznam.get(b) == y && seznam.get(b + 1) == x) {
+                return;
+            }
+        }
+        seznam.add(y);
+        seznam.add(x);
+    }
 
-    public static boolean potopena(int sloupec, int radek, Bunka[][] hraciPole) {
+    public static boolean potopena(int sloupec, int radek, Bunka[][] hraciPole, Bunka[][] zasahy) {
         ArrayList<Integer> seznam = new ArrayList<>();
         Collections.addAll(seznam, radek, sloupec);
         for (int a = 0; a < seznam.size(); a += 2) {
             int y = seznam.get(a);
             int x = seznam.get(a + 1);
-            if (seznam.isEmpty()) {
-                return true;
-            }
-            if (y - 1 < 0) {
-                continue;
-            }
-            if (y + 1 >= 10) {
-                continue;
-            }
-            if (x - 1 < 0) {
-                continue;
-            }
-            if (x + 1 >= 10) {
-                continue;
-            }
-            if (hraciPole[y - 1][x] == LOD) {
-                return false;
-            }
-            if (hraciPole[y + 1][x] == LOD) {
-                return false;
-            }
-            if (hraciPole[y][x + 1] == LOD) {
-                return false;
-            }
-            if (hraciPole[y][x - 1] == LOD) {
-                return false;
-            }
+            if (y - 1 >= 0) {
+                if (hraciPole[y - 1][x] == LOD) {
+                    return false;
+                }
+                if (hraciPole[y - 1][x] == STRELENA) {
+                    pridejNoveSouradnice(seznam, y - 1, x);
+                }
 
-            if (hraciPole[y][x + 1] == STRELENA) {
-                Collections.addAll(seznam, y, x + 1);
             }
-            if (hraciPole[y][x - 1] == STRELENA) {
-                Collections.addAll(seznam, y, x - 1);
+            if (y + 1 < 10) {
+                if (hraciPole[y + 1][x] == LOD) {
+                    return false;
+                }
+                if (hraciPole[y + 1][x] == STRELENA) {
+                    pridejNoveSouradnice(seznam, y + 1, x);
+                }
+
             }
-            if (hraciPole[y + 1][x] == STRELENA) {
-                Collections.addAll(seznam, y + 1, x);
+            if (x - 1 >= 0) {
+                if (hraciPole[y][x - 1] == LOD) {
+                    return false;
+                }
+                if (hraciPole[y][x - 1] == STRELENA) {
+                    pridejNoveSouradnice(seznam, y, x - 1);
+                }
             }
-            if (hraciPole[y - 1][x] == STRELENA) {
-                Collections.addAll(seznam, y - 1, x);
+            if (x + 1 < 10) {
+                if (hraciPole[y][x + 1] == LOD) {
+                    return false;
+                }
+                if (hraciPole[y][x + 1] == STRELENA) {
+                    pridejNoveSouradnice(seznam, y, x + 1);
+                }
+
             }
         }
         while (!seznam.isEmpty()) {
             int y = seznam.remove(0);
             int x = seznam.remove(0);
+            if (zasahy != null) {
+                zasahy[y][x] = POTOPENA;
+            }
             hraciPole[y][x] = POTOPENA;
         }
         return true;
@@ -501,75 +510,82 @@ public class Pomucky {
         ArrayList<Integer> seznam = new ArrayList<>();
         ArrayList<Integer> obteckovani = new ArrayList<>();
         Collections.addAll(seznam, radek, sloupec);
-        while (!seznam.isEmpty()) {
-            int x = seznam.remove(0);
-            int y = seznam.remove(0);
+        for (int a = 0; a < seznam.size(); a+= 2) {
+            int x = seznam.get(a);
+            int y = seznam.get(a + 1);
             if (y - 1 >= 0) {
                 if (hraciPole[y - 1][x].jeLod()) {
-                    Collections.addAll(seznam, x, y - 1);
+                    pridejNoveSouradnice(seznam, x, y - 1);
                 } else {
-                    Collections.addAll(obteckovani, x, y - 1);
+                    pridejNoveSouradnice(obteckovani, x, y - 1);
                     hraciPole[y - 1][x] = ZABRANE;
                 }
                 if (x - 1 >= 0) {
                     if (hraciPole[y - 1][x - 1].jeLod()) {
-                        Collections.addAll(seznam, x - 1, y - 1);
+                        pridejNoveSouradnice(seznam, x - 1, y - 1);
                     } else {
-                        Collections.addAll(obteckovani, x - 1, y - 1);
+                        pridejNoveSouradnice(obteckovani, x - 1, y - 1);
                         hraciPole[y - 1][x - 1] = ZABRANE;
                     }
                 }
                 if (x + 1 < 10) {
                     if (hraciPole[y - 1][x + 1].jeLod()) {
-                        Collections.addAll(seznam, x + 1, y - 1);
+                        pridejNoveSouradnice(seznam, x + 1, y - 1);
                     } else {
-                        Collections.addAll(obteckovani, x + 1, y - 1);
+                        pridejNoveSouradnice(obteckovani, x + 1, y - 1);
                         hraciPole[y - 1][x + 1] = ZABRANE;
                     }
                 }
             }
             if (x - 1 >= 0) {
                 if (hraciPole[y][x - 1].jeLod()) {
-                    Collections.addAll(seznam, x - 1, y);
+                    pridejNoveSouradnice(seznam, x - 1, y);
                 } else {
-                    Collections.addAll(obteckovani, x - 1, y);
+                    pridejNoveSouradnice(obteckovani, x - 1, y);
                     hraciPole[y][x - 1] = ZABRANE;
                 }
                 if (y + 1 > 10) {
                     if (hraciPole[y + 1][x - 1].jeLod()) {
-                        Collections.addAll(seznam, x - 1, y + 1);
+                        pridejNoveSouradnice(seznam, x - 1, y + 1);
                     } else {
-                        Collections.addAll(obteckovani, x - 1, y + 1);
+                        pridejNoveSouradnice(obteckovani, x - 1, y + 1);
                         hraciPole[y + 1][x - 1] = ZABRANE;
                     }
                 }
             }
             if (x + 1 < 10) {
                 if (hraciPole[y][x + 1].jeLod()) {
-                    Collections.addAll(seznam, x + 1, y);
+                    pridejNoveSouradnice(seznam, x + 1, y);
                 } else {
-                    Collections.addAll(obteckovani, x + 1, y);
+                    pridejNoveSouradnice(obteckovani, x + 1, y);
                     hraciPole[y][x + 1] = ZABRANE;
                 }
                 if (y + 1 < 10) {
                     if (hraciPole[y + 1][x + 1].jeLod()) {
-                        Collections.addAll(seznam, x + 1, y + 1);
+                        pridejNoveSouradnice(seznam, x + 1, y + 1);
                     } else {
-                        Collections.addAll(obteckovani, x + 1, y + 1);
+                        pridejNoveSouradnice(obteckovani, x + 1, y + 1);
                         hraciPole[y + 1][x + 1] = ZABRANE;
                     }
                 }
             }
             if (y + 1 < 10) {
                 if (hraciPole[y + 1][x].jeLod()) {
-                    Collections.addAll(seznam, x, y + 1);
+                    pridejNoveSouradnice(seznam, x, y + 1);
                 } else {
-                    Collections.addAll(obteckovani, x, y + 1);
+                    pridejNoveSouradnice(obteckovani, x, y + 1);
                     hraciPole[y + 1][x] = ZABRANE;
                 }
             }
         }
         return obteckovani;
+    }
+
+    public static void vypisError(String chyba, TextGraphics graphics, Screen screen) throws IOException {
+        vycistiTerminal(graphics);
+        graphics.setForegroundColor(TextColor.ANSI.RED_BRIGHT);
+        Pomucky.vyzvaAVstup(0, 0, chyba + ", pro pokracovani zmackni enter", graphics, screen);
+        graphics.setForegroundColor(TextColor.ANSI.DEFAULT);
     }
 
 }
