@@ -41,10 +41,10 @@ public class StavHrace {
         this.screen = screen;
         this.clovek = clovek;
         this.hGraphics = graphics.newTextGraphics(
-                new TerminalPosition(0, 0), new TerminalSize(60, 50));
+                new TerminalPosition(0, 0), new TerminalSize(70, 50));
         this.hPole = hGraphics.newTextGraphics(new TerminalPosition(0, 0), new TerminalSize(24, 50));
         this.hText = hGraphics.newTextGraphics(new TerminalPosition(25, 0), new TerminalSize(45, 50));
-        this.pGraphics = graphics.newTextGraphics(new TerminalPosition(60, 0), new TerminalSize(60, 50));
+        this.pGraphics = graphics.newTextGraphics(new TerminalPosition(70, 0), new TerminalSize(50, 50));
         this.clovekH = clovek.getHracPole();
         for (int a = 0; a < pocitac.length; a++) {
             for (int b = 0; b < pocitac[a].length; b++) {
@@ -109,7 +109,7 @@ public class StavHrace {
             vytiskniStav(-1, -1);
             while (true) {
                 Pomucky.vycistiTerminal(hText);
-                String vstup = Pomucky.vyzvaAVstup(0, 0, "Napis strelnou pozici (a1; A1)", hText, screen);
+                String vstup = Pomucky.vyzvaAVstup(0, 0, "cil strelby (a1; A1)", hText, screen);
                 if (vstup.equals("")) {
                     Pomucky.vypisError("Neplatny vstup", hText, screen);
                     continue;

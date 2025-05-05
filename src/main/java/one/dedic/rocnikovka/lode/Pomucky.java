@@ -68,9 +68,12 @@ public class Pomucky {
                         return text;
                     }
                     case BACKSPACE: {
-                        text = text.substring(0, text.length() - 1);
-                        graphics.putString(x, y, text + " ");
+                        if (text.length() > 0) {
+                            text = text.substring(0, text.length() - 1);
+                            graphics.putString(x, y, text + " ");
+                        }
                         break;
+
                     }
                     case ESCAPE: {
                         for (int a = 0; a < text.length(); a++) {
@@ -422,9 +425,9 @@ public class Pomucky {
         writer.putString(vyzva + ": ");
         return Pomucky.prectiVstup(writer.getCursorPosition(), graphics, screen);
     }
-    
+
     static void pridejNoveSouradnice(ArrayList<Integer> seznam, int y, int x) {
-        for (int b = 0; b < seznam.size(); b+= 2) {
+        for (int b = 0; b < seznam.size(); b += 2) {
             if (seznam.get(b) == y && seznam.get(b + 1) == x) {
                 return;
             }
@@ -510,7 +513,7 @@ public class Pomucky {
         ArrayList<Integer> seznam = new ArrayList<>();
         ArrayList<Integer> obteckovani = new ArrayList<>();
         Collections.addAll(seznam, radek, sloupec);
-        for (int a = 0; a < seznam.size(); a+= 2) {
+        for (int a = 0; a < seznam.size(); a += 2) {
             int x = seznam.get(a);
             int y = seznam.get(a + 1);
             if (y - 1 >= 0) {
