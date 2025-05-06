@@ -58,7 +58,7 @@ public class LodeMain {
 //       pocitac.opakUmisteniclovek.umisteniLodi(SeznamLodi.lode.get(11));Lodi();
         StavPocitace stavPocitace = null;
         clovek.umisteniLodi();
-        HraciPolePocitac polePocitace = new HraciPolePocitac(screen, graphics);
+        HraciPolePocitac polePocitace = new HraciPolePocitac(screen, graphics.newTextGraphics(new TerminalPosition(70, 0), new TerminalSize(50, 50)));
         if (clovek.getUlozenaHra() != null && clovek.getUlozenaHra().getStavPocitace() != null) {
             stavPocitace = clovek.getUlozenaHra().getStavPocitace();
             polePocitace.setsULodi(clovek.getUlozenaHra().getPocitac());
@@ -87,13 +87,13 @@ public class LodeMain {
         while (true) {
             
             if (stavHrace.strileni()) {
-                stavHrace.vytiskniStav(-1, -1);
+                stavHrace.vytiskniKonecHry();
                 graphics.setForegroundColor(TextColor.ANSI.CYAN);
                 Pomucky.vyzvaAVstup(0, 0, "VYHRAL JSI, gratulace (pro ukonceni stiskni enter)", graphics, screen);
                 break;
             }
             if (stavPocitace.strileni()) {
-                stavHrace.vytiskniStav(-1, -1);
+                stavHrace.vytiskniKonecHry();
                 graphics.setForegroundColor(TextColor.ANSI.CYAN);
                 Pomucky.vyzvaAVstup(0, 0, "VYHRAL POCITAC, hodne stesti priste (pro ukonceni stiskni enter)", graphics, screen);
                 break;

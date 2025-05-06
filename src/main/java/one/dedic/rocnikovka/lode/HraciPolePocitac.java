@@ -86,15 +86,10 @@ public class HraciPolePocitac {
                         int x = random.nextInt(10 - lod.getVizual()[0].length);
                         int y = random.nextInt(10 - lod.getVizual().length);
                         if (Pomucky.prekryvani(lod, hraciPole, x, y)) {
-                            Pomucky.kopiePoleDoPole(x, y, Pomucky.maskaLode(lod), hraciPole);
+                            Pomucky.kopiePoleDoPole(x - 1, y - 1, Pomucky.maskaLode(lod), hraciPole);
                             sULodi.pridaniDoSeznamu(new UmistenaLod(lod, x, y, 0));
                             hodnota = false;
                             poctyULodi[velikost]++;
-                            try {
-                                screen.refresh();
-                            } catch (IOException vyjimka) {
-
-                            }
                             break;
                         }
                         kolikrat++;

@@ -77,7 +77,7 @@ public class StavHrace {
         screen.refresh();
         if (xp != -1 || yp != -1) {
             switch (clovek.getHracPole()[yp][xp]) {
-                case VEDLE : {
+                case VEDLE: {
                     Pomucky.vycistiTerminal(hText);
                     Pomucky.vyzvaAVstup(0, 0, "Pocitac trefil rybu, vedle (enter)", hText, screen);
                     screen.refresh();
@@ -97,7 +97,7 @@ public class StavHrace {
                 }
             }
         }
-        
+
     }
 
     public boolean strileni() throws IOException {
@@ -118,6 +118,13 @@ public class StavHrace {
                     Pomucky.ukladani(uHra);
                     Pomucky.vycistiTerminal(hText);
                     Pomucky.vyzvaAVstup(0, 0, "hra byla ulozena", hText, screen);
+                    continue;
+                }
+                if (vstup.equals("*")) {
+                    vytiskniKonecHry();
+                    Pomucky.vycistiTerminal(hText);
+                    Pomucky.vyzvaAVstup(0, 0, "Vzdal jsi hru. Stiskni enter", hText, screen);
+                    System.exit(0);
                 }
                 char vstup1 = vstup.toLowerCase().charAt(0);
                 vstup1 -= 'a';
@@ -182,6 +189,10 @@ public class StavHrace {
                         vytiskniStav(-1, -1);
                         Pomucky.vyzvaAVstup(0, 0, "Zasah, hrajes dal", hText, screen);
                     }
+                    if (Pomucky.konecHry(pocitac)) {
+                        return true;
+
+                    }
                     break;
                 }
                 case STRELENA:
@@ -195,12 +206,20 @@ public class StavHrace {
 
             }
         }
-        
-        if (Pomucky.konecHry(pocitac)) {
-            return true;
 
-        }
         return false;
+    }
+
+    public void vytiskniKonecHry() throws IOException {
+        for (int a = 0; a < zasahy.length; a++) {
+            for (int b = 0; b < zasahy[a].length; b++) {
+                if (zasahy[a][b] != null && zasahy[a][b] != VODA) {
+                    pocitac[a][b] = zasahy[a][b];
+                }
+            }
+        }
+        Pomucky.vytisknuti2DPole(pocitac, pGraphics, true, clovek.ZACATEK_HRACPOLE_X, clovek.ZACATEK_HRACPOLE_Y);
+        screen.refresh();
     }
 
 }

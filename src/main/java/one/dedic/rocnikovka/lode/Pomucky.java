@@ -64,6 +64,9 @@ public class Pomucky {
 
             } else {
                 switch (klavesa.getKeyType()) {
+                    case EOF: {
+                        System.exit(0);
+                    }
                     case ENTER: {
                         return text;
                     }
@@ -590,5 +593,5 @@ public class Pomucky {
         Pomucky.vyzvaAVstup(0, 0, chyba + ", pro pokracovani zmackni enter", graphics, screen);
         graphics.setForegroundColor(TextColor.ANSI.DEFAULT);
     }
-
+    
 }
