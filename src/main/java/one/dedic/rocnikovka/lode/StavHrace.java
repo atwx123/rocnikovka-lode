@@ -167,7 +167,7 @@ public class StavHrace {
                 case VEDLE: {
                     Pomucky.vycistiTerminal(hText);
                     vytiskniStav(-1, -1);
-                    Pomucky.vyzvaAVstup(sloupec, radek, "Vytrelil jsi na pozici, kam jsi uz strilel, vedle", hText, screen);
+                    Pomucky.vyzvaAVstup(0, 0, "Vytrelil jsi na pozici, kam jsi uz strilel, vedle", hText, screen);
                     hodnota = false;
                     break;
                 }

@@ -356,9 +356,8 @@ public class HraciPoleClovek {
             while (true) {
                 vycistiTerminal(text);
                 int vstup2 = 0;
-                String vystup = "Napis pozici lodi (a1; A1)";
-                text.putString(0, 0, vystup);
-                String vstup = prectiVstup(new TerminalPosition(vystup.length(), 0), text, screen);
+                String vystup = "";
+                String vstup = Pomucky.vyzvaAVstup(0, 0, "Napis pozici lodi (a1; A1)", text, screen);
                 vycistiTerminal(0, 0, 12, 35, text);
                 if (vstup.equals("")) {
                     Pomucky.vypisError("neplatna souradnice", text, screen);
