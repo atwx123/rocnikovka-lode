@@ -59,9 +59,10 @@ public class LodeMain {
         StavPocitace stavPocitace = null;
         clovek.umisteniLodi();
         HraciPolePocitac polePocitace = new HraciPolePocitac(screen, graphics.newTextGraphics(new TerminalPosition(70, 0), new TerminalSize(50, 50)));
-        if (clovek.getUlozenaHra() != null && clovek.getUlozenaHra().getStavPocitace() != null) {
-            stavPocitace = clovek.getUlozenaHra().getStavPocitace();
-            polePocitace.setsULodi(clovek.getUlozenaHra().getPocitac());
+        UlozenaHra hra = clovek.getUlozenaHra();
+        if (hra != null && hra.getStavPocitace() != null) {
+            stavPocitace = hra.getStavPocitace();
+            polePocitace.setsULodi(hra.getPocitac());
         } else {
             for (int a = 0; a < clovek.getHracPole().length; a++) {
                 for (int b = 0; b < clovek.getHracPole()[a].length; b++) {
@@ -75,17 +76,17 @@ public class LodeMain {
                 return;
             }
             stavPocitace = new StavPocitace(clovek.getHracPole());
-            UlozenaHra hra = new UlozenaHra();
+            hra = new UlozenaHra();
             hra.setClovek(clovek.getuLode());
             hra.setPocitac(polePocitace.getsULodi());
             hra.setStavPocitace(stavPocitace);
             Pomucky.ukladani(hra);
         }
-        
-        StavHrace stavHrace = new StavHrace(polePocitace.getHraciPole(), graphics, screen, clovek, clovek.getUlozenaHra());
+
+        StavHrace stavHrace = new StavHrace(polePocitace.getHraciPole(), graphics, screen, clovek, hra);
         stavPocitace.setHrac(stavHrace);
         while (true) {
-            
+
             if (stavHrace.strileni()) {
                 stavHrace.vytiskniKonecHry();
                 graphics.setForegroundColor(TextColor.ANSI.CYAN);

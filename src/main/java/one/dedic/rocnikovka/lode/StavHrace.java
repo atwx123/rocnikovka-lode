@@ -115,7 +115,7 @@ public class StavHrace {
                     continue;
                 }
                 if (vstup.equals("u")) {
-                    Pomucky.ukladani(uHra);
+                    uHra.setClovek(clovek.getuLode());
                     Pomucky.vycistiTerminal(hText);
                     Pomucky.vyzvaAVstup(0, 0, "hra byla ulozena", hText, screen);
                     continue;
